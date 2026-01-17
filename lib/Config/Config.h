@@ -42,8 +42,8 @@ namespace config {
     int constexpr SERVO_BOTTOM_1_REVERT_ANGLE = 180; // revert angle for bottom servo 1
     int constexpr SERVO_BOTTOM_2_REVERT_ANGLE = 0; // revert angle for bottom servo 2
 
-    int constexpr SERVO_GRIPPER_1_OPEN_ANGLE = 0; // Open angle for gripper servo 1
-    int constexpr SERVO_GRIPPER_2_OPEN_ANGLE = 180; // Open angle for gripper servo 2
+    int constexpr SERVO_GRIPPER_1_OPEN_ANGLE = 180; // Open angle for gripper servo 1
+    int constexpr SERVO_GRIPPER_2_OPEN_ANGLE = 0; // Open angle for gripper servo 2
 
     // SOFTWARE CONFIGURATION
 

@@ -25,7 +25,9 @@ void ActuatorStateMachine::StateOpen::_exit()
 
 void ActuatorStateMachine::StateColorMesure::_enter()
 {
-    // Code to execute when entering the ColorMesure state
+    auto stateMachine = machineAs<ActuatorStateMachine>();
+    stateMachine->m_srv_gripper_1.write(config::SERVO_GRIPPER_1_HOME_ANGLE);
+    stateMachine->m_srv_gripper_2.write(config::SERVO_GRIPPER_2_HOME_ANGLE);
 }
 
 void ActuatorStateMachine::StateColorMesure::_execute()

@@ -31,7 +31,7 @@ protected:
 class StateMachine
 {
 public:
-    StateMachine(State* InitialState) : m_currentState(InitialState) {};
+    StateMachine(State* InitialState) : m_nextState(InitialState) {};
     void run();
     void setNextState(State* state) { m_nextState = state; };
 

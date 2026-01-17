@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Timmer.h"
+#include "Timer.h"
 
 Timer::Timer(unsigned long duration) : m_startMillis(0), m_running(false), m_duration(duration) {}
 
