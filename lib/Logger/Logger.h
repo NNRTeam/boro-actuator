@@ -15,7 +15,7 @@ public:
         NONE = 4
     };
 
-    Logger(Level level = Level::INFO) : logLevel(level) {}
+    Logger(Level level = Level::INFO, String prefix = "") : logLevel(level), logPrefix(prefix) {}
 
     void setLogLevel(Level level) {
         logLevel = level;
@@ -36,11 +36,18 @@ public:
     void error(const String &message) {
         log(Level::ERROR, "ERROR: " + message);
     }
+
+    void setPrefix(const String &prefix) {
+        logPrefix = prefix;
+    }
 private:
     Level logLevel;
+    String logPrefix;
 
     void log(Level level, const String &message) {
         if (config::ENABLE_SERIAL_DEBUG && level >= logLevel) {
+            if (!logPrefix.isEmpty())
+                Serial.print("[" + logPrefix + "] ");
             Serial.println(message);
         }
     }

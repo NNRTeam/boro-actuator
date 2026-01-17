@@ -2,21 +2,18 @@
 #include <Config.h>
 #include <Logger.h>
 #include <ColorSensor.h>
+#include <Deployer/ActuatorDeployer.h>
+#include <ActuatorStateMachine/ActuatorStateMachine.h>
 
 Logger logger(Logger::Level::DEBUG);
-ColorSensor colorSensor;
-
+ActuatorDeployer actuatorDeployer;
+ActuatorStateMachine* actuatorStateMachine;
 
 void setup() {
     Serial.begin(config::SERIAL_BAUDRATE);
-    colorSensor.begin();
+    actuatorStateMachine = actuatorDeployer.deployActuators();
 }
 
 void loop() {
-    RGBData colorData = colorSensor.readCalibratedRGB();
-    logger.info("Calibrated RGB Values - R: " + String(colorData.red) +
-                " G: " + String(colorData.green) +
-                " B: " + String(colorData.blue) +
-                " C: " + String(colorData.clear));
-    delay(1000);
+    actuatorStateMachine->run();
 }
