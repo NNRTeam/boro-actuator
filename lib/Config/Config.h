@@ -4,55 +4,6 @@
 namespace config {
 
     bool constexpr TEST = false; // Enable or disable test mode
-    bool constexpr MOTOR_ODOM_ONLY = true; // Enable or disable motor odometry only mode
-
-    // HARDWARE CONFIGURATION
-
-    int constexpr M_EN_PIN = 2;
-
-    int constexpr M1_DIR_PIN = 4;
-    int constexpr M1_STEP_PIN = 3;
-
-    int constexpr M2_DIR_PIN = 6;
-    int constexpr M2_STEP_PIN = 5;
-
-    int constexpr OD1_CS_PIN = 10;
-    int constexpr OD2_CS_PIN = 9;
-
-    int constexpr MICROSTEPS = 16; // Microsteps for motor driver (1, 2, 4, 8, 16)
-    int constexpr STEP_PER_REVOLUTION = 200; // Steps per revolution for the motor
-
-    // MECHANICAL CONFIGURATION
-
-    float constexpr M1_WHEEL_DIAMETER_MM = 60.0f; // Motor Wheel diameter in millimeters
-    float constexpr M2_WHEEL_DIAMETER_MM = 60.0f; // Motor Wheel diameter in millimeters
-
-    float constexpr OD1_WHEEL_DIAMETER_MM = 50.0f; // Odom Wheel diameter in millimeters
-    float constexpr OD2_WHEEL_DIAMETER_MM = 50.0f; // Odom Wheel diameter in millimeters
-
-    float constexpr M_WHEEL_BASE_MM = 170.5f;    // Distance between the two motors wheels in millimeters
-    float constexpr OD_WHEEL_BASE_MM = 200.0f;   // Distance between the two odom wheels in millimeters
-
-    // MOTION CONFIGURATION
-
-    float constexpr GO_MISSION_TOLERANCE_M = 0.01f;        // Tolerance for GO missions in meters
-    float constexpr TURN_MISSION_TOLERANCE_RAD = 0.01f;     // Tolerance for TURN missions in radians
-
-    float constexpr MAX_LINEAR_VELOCITY_M_S = 0.8f;    // Maximum linear velocity in metter per second
-    float constexpr MAX_ANGULAR_VELOCITY_RAD_S = 1.7f;    // Maximum angular velocity in radians per second
-
-    float constexpr LINEAR_ACCELERATION_M_S2 = 0.9f;      // Linear acceleration in metter per second squared
-    float constexpr ANGULAR_ACCELERATION_RAD_S2 = 2.0f;     // Angular acceleration in radians per second squared
-
-    float constexpr LINEAR_JERK_M_S3 = 2.0f;              // Linear jerk (rate of change of acceleration) in m/s^3
-
-    // SOFTWARE CONFIGURATION
-
-    float constexpr CONTROL_LOOP_FREQUENCY_HZ = 25.0f; // Control loop frequency in Hertz
-    float constexpr ODOM_MEASURE_FREQUENCY_HZ = 15.0f; // Odometry measurement frequency in Hertz
-    float constexpr ODOM_FREQUENCY_HZ = 10.0f; // Control loop frequency in Hertz
-
-
     unsigned long int constexpr SERIAL_BAUDRATE = 115200; // Serial communication baudrate
     bool constexpr ENABLE_SERIAL_DEBUG = true; // Enable or disable serial debug messages
 

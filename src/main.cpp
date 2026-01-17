@@ -1,18 +1,22 @@
 #include <Arduino.h>
 #include <Config.h>
-#include <Logger/Logger.h>
-#include <SystemManager/SystemManager.h>
+#include <Logger.h>
+#include <ColorSensor.h>
 
-SystemManager systemManager;
+Logger logger(Logger::Level::DEBUG);
+ColorSensor colorSensor;
+
 
 void setup() {
     Serial.begin(config::SERIAL_BAUDRATE);
-    SPI.begin();
-    systemManager.initialize(Logger::Level::INFO);
-    //systemManager.m_missionManager->addFakeMissionForTest();
+    colorSensor.begin();
 }
 
 void loop() {
-    systemManager.m_robot->run();
-    systemManager.m_serialClient->run();
+    RGBData colorData = colorSensor.readCalibratedRGB();
+    logger.info("Calibrated RGB Values - R: " + String(colorData.red) +
+                " G: " + String(colorData.green) +
+                " B: " + String(colorData.blue) +
+                " C: " + String(colorData.clear));
+    delay(1000);
 }
