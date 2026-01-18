@@ -27,6 +27,9 @@ namespace config {
     int constexpr MOTOR1_HOME_POSITION = 400; // Home position for motor 1
     int constexpr MOTOR2_HOME_POSITION = 400; // Home position for motor 2
 
+    bool constexpr MOTOR1_INVERTED = false; // Inversion setting for motor 1
+    bool constexpr MOTOR2_INVERTED = true;  // Inversion setting for motor
+
     int constexpr SERVO_TOP_1_HOME_ANGLE = 70; // Home angle for top servo 1
     int constexpr SERVO_TOP_2_HOME_ANGLE = 80; // Home angle for top servo 2
     int constexpr SERVO_BOTTOM_1_HOME_ANGLE = 0; // Home angle for bottom servo 1

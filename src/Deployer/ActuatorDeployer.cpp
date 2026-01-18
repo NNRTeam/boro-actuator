@@ -7,10 +7,12 @@ ActuatorStateMachine* ActuatorDeployer::deployActuators()
     m_logger.info("Deploying actuators...");
     _deployServos();
     _deployColorSensor();
+    _deployMotorControllers();
+    m_logger.info("All actuators deployed.");
     return new ActuatorStateMachine(m_srv_top_1, m_srv_top_2,
                                     m_srv_bottom_1, m_srv_bottom_2,
                                     m_srv_gripper_1, m_srv_gripper_2,
-                                    m_colorSensor);
+                                    m_colorSensor, m_motor_1, m_motor_2);
 }
 
 void ActuatorDeployer::_deployServos()
@@ -35,4 +37,15 @@ void ActuatorDeployer::_deployColorSensor()
 {
     m_colorSensor.begin();
     m_logger.info("Color Sensor Deployed");
+}
+
+void ActuatorDeployer::_deployMotorControllers()
+{
+    m_motor_1.begin();
+    m_motor_2.begin();
+
+    m_motor_1.homing(config::MOTOR1_HOME_POSITION);
+    m_motor_2.homing(config::MOTOR2_HOME_POSITION);
+
+    m_logger.info("Motor Controllers Deployed");
 }

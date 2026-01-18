@@ -9,11 +9,12 @@ public:
     void start();
     void stop();
     void reset();
-    unsigned long elapsedMillis() const;
+    unsigned long elapsedMicros() const;
     bool isExpired() const;
+    void setDuration(unsigned long duration);
 
 private:
-    unsigned long m_startMillis;
+    unsigned long m_startMicros;
     bool m_running;
     unsigned long m_duration;
 };
