@@ -24,6 +24,12 @@ bool Timer::isExpired() const
     return m_running && (micros() - m_startMicros) >= m_duration;
 }
 
+void Timer::reset()
+{
+    m_startMicros = 0;
+    m_running = false;
+}
+
 void Timer::setDuration(unsigned long duration)
 {
     m_duration = duration;

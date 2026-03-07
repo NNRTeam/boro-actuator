@@ -32,6 +32,7 @@ class StateMachine
 {
 public:
     StateMachine(State* InitialState) : m_nextState(InitialState) {};
+    virtual ~StateMachine() = default;
     void run();
     void setNextState(State* state) { m_nextState = state; };
 

@@ -10,12 +10,13 @@ public:
     Motor(uint8_t stepPin, uint8_t dirPin, uint8_t enablePin, uint8_t homePin, bool inverted = false);
     void begin();
     void setPosition(int32_t position);
-    int32_t getPosition() const;
+    [[nodiscard]] int32_t getPosition() const;
     void setObjective(int32_t objective);
-    int32_t getObjective() const;
+    [[nodiscard]] int32_t getObjective() const;
     void run();
     void homing(int32_t homePosition);
-    bool isAtObjective() const;
+    [[nodiscard]] bool isAtHome() const;
+    [[nodiscard]] bool isAtObjective() const;
     void setStepDelay(unsigned long delayUs);
 
 private:

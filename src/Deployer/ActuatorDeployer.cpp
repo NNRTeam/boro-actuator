@@ -4,6 +4,7 @@
 
 ActuatorStateMachine* ActuatorDeployer::deployActuators()
 {
+    delay(5000); // wait for 5 seconds before starting deployment to allow for serial monitor connection
     m_logger.info("Deploying actuators...");
     _deployServos();
     _deployColorSensor();
@@ -30,6 +31,14 @@ void ActuatorDeployer::_deployServos()
     m_srv_bottom_2.write(config::SERVO_BOTTOM_2_HOME_ANGLE);
     m_srv_gripper_1.write(config::SERVO_GRIPPER_1_HOME_ANGLE);
     m_srv_gripper_2.write(config::SERVO_GRIPPER_2_HOME_ANGLE);
+
+    // m_srv_top_1.write(90);
+    // m_srv_top_2.write(90);
+    // m_srv_bottom_1.write(90);
+    // m_srv_bottom_2.write(90);
+    // m_srv_gripper_1.write(90);
+    // m_srv_gripper_2.write(90);
+
     m_logger.info("Servo Deployed");
 }
 

@@ -53,14 +53,19 @@ void Motor::run()
 void Motor::homing(int32_t homePosition)
 {
     _enable(true);
-    while (digitalRead(m_homePin) == HIGH)
+    while (!isAtHome())
     {
-        _step(false); // assume homing is in the negative direction
+        _step(true); // assume homing is in the positive direction
         delayMicroseconds(config::MOTOR_STEP_DELAY_US);
     }
     m_currentPosition = homePosition;
     m_objectivePosition = homePosition;
     _enable(false);
+}
+
+bool Motor::isAtHome() const
+{
+    return digitalRead(m_homePin) == HIGH;
 }
 
 bool Motor::isAtObjective() const
