@@ -36,13 +36,16 @@ namespace config {
     int constexpr MOTOR1_GATE_OPEN_POSITION = 0; // Gate open position for motor 1
     int constexpr MOTOR2_GATE_OPEN_POSITION = 0; // Gate open position for motor 2
 
+    int constexpr MOTOR1_GATE_TOP_OPEN_POSITION = 150; // Gate top open position for motor 1
+    int constexpr MOTOR2_GATE_TOP_OPEN_POSITION = 150; // Gate top open position for motor 2
+
     int constexpr MOTOR1_GATE_CLOSE_POSITION = 460; // Gate close position for motor 1
     int constexpr MOTOR2_GATE_CLOSE_POSITION = 460; // Gate close position for motor 2
 
     bool constexpr MOTOR1_INVERTED = false; // Inversion setting for motor 1
     bool constexpr MOTOR2_INVERTED = true;  // Inversion setting for motor 2
 
-    int constexpr SERVO_TOP_1_HOME_ANGLE = 80; // Home angle for top servo 1
+    int constexpr SERVO_TOP_1_HOME_ANGLE = 85; // Home angle for top servo 1
     int constexpr SERVO_TOP_2_HOME_ANGLE = 85; // Home angle for top servo 2
     int constexpr SERVO_BOTTOM_1_HOME_ANGLE = 0; // Home angle for bottom servo 1
     int constexpr SERVO_BOTTOM_2_HOME_ANGLE = 180; // Home angle for bottom servo 2
@@ -66,7 +69,7 @@ namespace config {
     unsigned long int constexpr SERIAL_BAUDRATE = 115200; // Serial communication baudrate
     bool constexpr ENABLE_SERIAL_DEBUG = true; // Enable or disable serial debug messages
 
-    unsigned long int constexpr MOTOR_STEP_DELAY_US = 3000; // Delay between motor steps in microseconds
+    unsigned long int constexpr MOTOR_STEP_DELAY_US = 2000; // Delay between motor steps in microseconds
 
     int constexpr I2C_ADD = 0x30; // I2C address for the robot
 

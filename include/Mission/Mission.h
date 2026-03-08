@@ -2,6 +2,15 @@
 
 #include <optional>
 
+enum class MissionStatus
+{
+    NOT_STARTED = 0,
+    STARTED = 1,
+    FINISHED = 2,
+    FAILED = 3,
+    CANCELED = 4,
+};
+
 class Mission
 {
 public:
@@ -13,12 +22,7 @@ public:
         DESTOCK,
     };
 
-    enum class Color
-    {
-        YELLOW,
-        BLUE,
-    };
-
+    int id;
     Type type;
-    Color color;
+    bool should_turn;
 };

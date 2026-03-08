@@ -5,7 +5,7 @@
 #include <Deployer/ActuatorDeployer.h>
 #include <ActuatorStateMachine/ActuatorStateMachine.h>
 
-Logger logger(Logger::Level::DEBUG);
+Logger logger(Logger::Level::INFO, "Main");
 ActuatorDeployer actuatorDeployer;
 ActuatorStateMachine* actuatorStateMachine;
 

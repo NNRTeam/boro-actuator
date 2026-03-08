@@ -4,12 +4,12 @@
 
 ActuatorStateMachine* ActuatorDeployer::deployActuators()
 {
-    delay(5000); // wait for 5 seconds before starting deployment to allow for serial monitor connection
-    m_logger.info("Deploying actuators...");
+    delay(2000); // wait for 5 seconds before starting deployment to allow for serial monitor connection
+    m_logger.debug("Deploying actuators...");
     _deployServos();
     _deployColorSensor();
     _deployMotorControllers();
-    m_logger.info("All actuators deployed.");
+    m_logger.debug("All actuators deployed.");
     return new ActuatorStateMachine(m_srv_top_1, m_srv_top_2,
                                     m_srv_bottom_1, m_srv_bottom_2,
                                     m_srv_gripper_1, m_srv_gripper_2,
@@ -39,13 +39,13 @@ void ActuatorDeployer::_deployServos()
     // m_srv_gripper_1.write(90);
     // m_srv_gripper_2.write(90);
 
-    m_logger.info("Servo Deployed");
+    m_logger.debug("Servo Deployed");
 }
 
 void ActuatorDeployer::_deployColorSensor()
 {
     m_colorSensor.begin();
-    m_logger.info("Color Sensor Deployed");
+    m_logger.debug("Color Sensor Deployed");
 }
 
 void ActuatorDeployer::_deployMotorControllers()
@@ -56,5 +56,5 @@ void ActuatorDeployer::_deployMotorControllers()
     m_motor_1.homing(config::MOTOR1_HOME_POSITION);
     m_motor_2.homing(config::MOTOR2_HOME_POSITION);
 
-    m_logger.info("Motor Controllers Deployed");
+    m_logger.debug("Motor Controllers Deployed");
 }
