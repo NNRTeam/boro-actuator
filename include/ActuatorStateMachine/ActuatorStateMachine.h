@@ -39,7 +39,7 @@ public:
         void _execute() override;
         void _exit() override;
     private:
-        Timer m_timer{1000000};
+        Timer m_timer{700000};
     } m_goToIdleState{this};
 
     class IdleState: public State
@@ -97,7 +97,7 @@ public:
         void _execute() override;
         void _exit() override;
     private:
-        Timer m_timer{500000};
+        Timer m_timer{300000};
     } m_uncontrolBottomNutBox{this};
 
     class GoToTopNutBox: public State
@@ -131,7 +131,7 @@ public:
         void _execute() override;
         void _exit() override;
     private:
-        Timer m_timer{700000};
+        Timer m_timer{500000};
     } m_openGate{this};
 
     class GoToTopNutBoxLeftPoint: public State
@@ -153,7 +153,7 @@ public:
         void _execute() override;
         void _exit() override;
     private:
-        Timer m_timer{500000};
+        Timer m_timer{300000};
     } m_uncontrolTopNutBox{this};
 
     class GoToBottomNutBox: public State
@@ -197,7 +197,7 @@ public:
         void _execute() override;
         void _exit() override;
     private:
-        Timer m_timer{700000};
+        Timer m_timer{200000};
     } m_closeGate{this};
 
     class OpenArm: public State
@@ -209,7 +209,7 @@ public:
         void _execute() override;
         void _exit() override;
     private:
-        Timer m_timer{500000};
+        Timer m_timer{300000};
     } m_openArm{this};
 
     class CloseArm: public State

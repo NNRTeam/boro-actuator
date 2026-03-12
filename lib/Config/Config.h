@@ -30,8 +30,8 @@ namespace config {
     int constexpr MOTOR1_BASE_POSITION = 0; // Base position for motor 1
     int constexpr MOTOR2_BASE_POSITION = 0; // Base position for motor 2
 
-    int constexpr MOTOR1_TURN_POSITION = 100; // Turn position for motor 1
-    int constexpr MOTOR2_TURN_POSITION = 100; // Turn position_ç for motor 2
+    int constexpr MOTOR1_TURN_POSITION = 85; // Turn position for motor 1
+    int constexpr MOTOR2_TURN_POSITION = 85; // Turn position_ç for motor 2
 
     int constexpr MOTOR1_GATE_OPEN_POSITION = 0; // Gate open position for motor 1
     int constexpr MOTOR2_GATE_OPEN_POSITION = 0; // Gate open position for motor 2
