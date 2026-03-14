@@ -20,422 +20,194 @@ void ActuatorStateMachine::serialParser() {
     if (input.length() > 0 && input[0] == 'M'){
         int firstSemicolon = input.indexOf(';');
         int secondSemicolon = input.indexOf(';', firstSemicolon + 1);
+        int thirdSemicolon = input.indexOf(';', secondSemicolon + 1);
 
-        if (firstSemicolon > 0 && secondSemicolon > 0) {
+        if (firstSemicolon > 0 && secondSemicolon > 0 && thirdSemicolon > 0) {
             int id = input.substring(1, firstSemicolon).toInt();
             int type = input.substring(firstSemicolon + 1, secondSemicolon).toInt();
-            int shouldTurn = input.substring(secondSemicolon + 1, input.length() - 1).toInt();
+            int shouldTurn = input.substring(secondSemicolon + 1, thirdSemicolon).toInt();
+            int shouldKeep = input.substring(thirdSemicolon + 1, input.length() - 1).toInt();
 
             Mission::Type missionType = static_cast<Mission::Type>(type);
             bool shouldTurnBool = shouldTurn != 0;
-            addMission({id, missionType, shouldTurnBool});
+            bool shouldKeepBool = shouldKeep != 0;
+            addMission({id, missionType, shouldTurnBool, shouldKeepBool});
         }
     }
 }
 
-void ActuatorStateMachine::GoToIdleState::_enter() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_motor_1.setObjective(config::MOTOR1_BASE_POSITION);
-        machine->m_motor_2.setObjective(config::MOTOR2_BASE_POSITION);
-        machine->m_srv_top_1.write(config::SERVO_TOP_1_OPEN_ANGLE);
-        machine->m_srv_top_2.write(config::SERVO_TOP_2_OPEN_ANGLE);
-        machine->m_srv_bottom_1.write(config::SERVO_BOTTOM_1_HOME_ANGLE);
-        machine->m_srv_bottom_2.write(config::SERVO_BOTTOM_2_HOME_ANGLE);
-        if (machine->isStockEmpty()) {
-            machine->m_srv_gripper_1.write(config::SERVO_GRIPPER_1_HOME_ANGLE);
-            machine->m_srv_gripper_2.write(config::SERVO_GRIPPER_2_HOME_ANGLE);
-            machine->m_isGateOpen = true;
-        } else {
-            machine->m_srv_gripper_1.write(config::SERVO_GRIPPER_1_OPEN_ANGLE);
-            machine->m_srv_gripper_2.write(config::SERVO_GRIPPER_2_OPEN_ANGLE);
-            machine->m_isGateOpen = false;
-        }
-        m_timer.start();
-    }
-}
-void ActuatorStateMachine::GoToIdleState::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        if (!machine->m_motor_1.isAtObjective())
-            machine->m_motor_1.run();
-        if (!machine->m_motor_2.isAtObjective())
-            machine->m_motor_2.run();
-        if (machine->m_motor_1.isAtObjective() && machine->m_motor_2.isAtObjective() && m_timer.isExpired()) {
-            m_stateMachine->setNextState(&machine->m_idleState);
-        }
-    }
-}
-void ActuatorStateMachine::GoToIdleState::_exit() {
-    m_timer.stop();
-    m_timer.reset();
-}
+State* ActuatorStateMachine::computeNextState(State* currentState) const
+{
+    if (!currentState)
+        return nullptr;
 
-void ActuatorStateMachine::IdleState::_enter() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        auto mission = machine->currentMission();
-        if (mission.has_value()) {
-            machine->sendMissionState(mission.value().id, MissionStatus::FINISHED);
-            machine->finishCurrentMission();
-        }
+    const String& name = currentState->name();
+    auto mission = currentMission();
+    if (!mission.has_value())
+    {
+        m_logger.warn("No current mission, cannot compute next state from " + name);
+        return nullptr;
     }
-}
-void ActuatorStateMachine::IdleState::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (!machine) return;
+    bool shouldTurn = mission ? mission->should_turn : false;
+    bool shouldKeep = mission ? mission->should_keep : false;
 
-    auto missionOpt = machine->currentMission();
-    if (!missionOpt.has_value()) return;
-
-    const Mission& mission = missionOpt.value();
-    machine->sendMissionState(mission.id, MissionStatus::STARTED);
-
-    if (mission.type != Mission::Type::PUT_IN_STOCK) {
-        m_stateMachine->setNextState(&machine->m_openArm);
-        return;
+    // ===== MAIN STATES TRANSITIONS =====
+    if (name == "GT_IDLE")
+    {
+        return &m_idleState;
     }
-
-    if (!mission.should_turn && !machine->isStockEmpty()) {
-        m_stateMachine->setNextState(&machine->m_goToTopNutBox);
-        return;
-    }
-
-    m_stateMachine->setNextState(&machine->m_closeArm);
-}
-void ActuatorStateMachine::IdleState::_exit() {
-}
-
-void ActuatorStateMachine::GoToRotation::_enter() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_motor_1.setObjective(config::MOTOR1_TURN_POSITION);
-        machine->m_motor_2.setObjective(config::MOTOR2_TURN_POSITION);
-    }
-}
-void ActuatorStateMachine::GoToRotation::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_motor_1.run();
-        machine->m_motor_2.run();
-        if (machine->m_motor_1.isAtObjective() && machine->m_motor_2.isAtObjective()) {
-            m_stateMachine->setNextState(&machine->m_turnToColor);
-        }
-    }
-}
-void ActuatorStateMachine::GoToRotation::_exit() {}
-
-void ActuatorStateMachine::TurnToColor::_enter() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        m_timer.start();
-        machine->m_srv_bottom_1.write(config::SERVO_BOTTOM_1_REVERT_ANGLE);
-        machine->m_srv_bottom_2.write(config::SERVO_BOTTOM_2_REVERT_ANGLE);
-    }
-}
-void ActuatorStateMachine::TurnToColor::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine && m_timer.isExpired()) {
-        if (!machine->m_isGateOpen) {
-            m_stateMachine->setNextState(&machine->m_goToOpenGate);
-        } else {
-            m_stateMachine->setNextState(&machine->m_goToCloseGate);
-        }
-    }
-}
-void ActuatorStateMachine::TurnToColor::_exit() {
-    m_timer.stop();
-    m_timer.reset();
-}
-
-void ActuatorStateMachine::GoToOpenGate::_enter() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_motor_1.setObjective(config::MOTOR1_GATE_OPEN_POSITION);
-        machine->m_motor_2.setObjective(config::MOTOR2_GATE_OPEN_POSITION);
-    }
-}
-void ActuatorStateMachine::GoToOpenGate::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_motor_1.run();
-        machine->m_motor_2.run();
-        if (machine->m_motor_1.isAtObjective() && machine->m_motor_2.isAtObjective()) {
-            if (machine->isStockEmpty()) {
-                m_stateMachine->setNextState(&machine->m_openGate);
-            } else {
-                m_stateMachine->setNextState(&machine->m_uncontrolBottomNutBox);
+    else if (name == "IDLE")
+    {
+        if (mission)
+        {
+            if (mission->type == Mission::Type::PUT_IN_STOCK && !isItemKept())
+            {
+                return &m_gotoBot_T0;
+            }
+            else if (mission->type == Mission::Type::DROP && isItemKept())
+            {
+                return &m_gotoBot_D0;
+            }
+            else if (mission->type == Mission::Type::DROP && !isItemKept())
+            {
+                return &m_gotoTop_D7;
             }
         }
     }
-}
-void ActuatorStateMachine::GoToOpenGate::_exit() {}
-
-
-void ActuatorStateMachine::UncontrolBottomNutBox::_enter() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_srv_top_1.write(config::SERVO_TOP_1_OPEN_ANGLE);
-        machine->m_srv_top_2.write(config::SERVO_TOP_2_OPEN_ANGLE);
-        m_timer.start();
+    // ===== TAKE SECTION TRANSITIONS =====
+    else if (name == "GT_BOT_T0")
+    {
+        if (isStockLocked() && !shouldKeep && !shouldTurn)
+        {
+            return &m_unpick_T10;
+        }
+        return &m_pick_T1;
     }
-}
-void ActuatorStateMachine::UncontrolBottomNutBox::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine && m_timer.isExpired()) {
-        m_stateMachine->setNextState(&machine->m_goToTopNutBox);
-    }
-}
-void ActuatorStateMachine::UncontrolBottomNutBox::_exit() {
-    m_timer.stop();
-    m_timer.reset();
-}
-
-// GoToTopNutBox Implementation
-void ActuatorStateMachine::GoToTopNutBox::_enter() {
-    // Move to top nut box position
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_motor_1.setObjective(config::MOTOR1_GATE_CLOSE_POSITION);
-        machine->m_motor_2.setObjective(config::MOTOR2_GATE_CLOSE_POSITION);
-    }
-}
-void ActuatorStateMachine::GoToTopNutBox::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_motor_1.run();
-        machine->m_motor_2.run();
-        if (machine->m_motor_1.isAtObjective() && machine->m_motor_2.isAtObjective()) {
-            m_stateMachine->setNextState(&machine->m_getTopNutBox);
+    else if (name == "pick_T1")
+    {
+        addItemToStock();
+        if (shouldTurn)
+        {
+            return &m_gotoTurn_T5;
+        }
+        else if (shouldKeep)
+        {
+            return &m_gotoIdleState;
+        }
+        else
+        {
+            return &m_gotoTop_T2;
         }
     }
-}
-void ActuatorStateMachine::GoToTopNutBox::_exit() {}
-
-void ActuatorStateMachine::GetTopNutBox::_enter() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_srv_top_1.write(config::SERVO_TOP_1_HOME_ANGLE);
-        machine->m_srv_top_2.write(config::SERVO_TOP_2_HOME_ANGLE);
-        m_timer.start();
+    else if (name == "GT_TOP_T2")
+    {
+        return &m_lock_T3;
     }
-}
-void ActuatorStateMachine::GetTopNutBox::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine && m_timer.isExpired()) {
-        m_stateMachine->setNextState(&machine->m_openGate);
+    else if (name == "LOCK_T3")
+    {
+        return &m_unpick_T4;
     }
-}
-void ActuatorStateMachine::GetTopNutBox::_exit() {
-    m_timer.stop();
-    m_timer.reset();
-}
-
-void ActuatorStateMachine::OpenGate::_enter() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_srv_gripper_1.write(config::SERVO_GRIPPER_1_HOME_ANGLE);
-        machine->m_srv_gripper_2.write(config::SERVO_GRIPPER_2_HOME_ANGLE);
-        machine->m_isGateOpen = true;
-        m_timer.start();
+    else if (name == "UNPICK_T4")
+    {
+        return &m_gotoIdleState;
     }
-}
-void ActuatorStateMachine::OpenGate::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine && m_timer.isExpired()) {
-        if (machine->isStockEmpty()) {
-            m_stateMachine->setNextState(&machine->m_goToCloseGate);
-        } else {
-            m_stateMachine->setNextState(&machine->m_goToTopNutBoxLeftPoint);
+    else if (name == "GT_TURN_T5")
+    {
+        return &m_turn_T6;
+    }
+    else if (name == "TURN_T6")
+    {
+        if (isStockLocked() && !shouldKeep)
+        {
+            return &m_gotoBot_T7;
+        }
+        else if (shouldKeep)
+        {
+            return &m_gotoIdleState;
+        }
+        else
+        {
+            return &m_gotoTop_T2;
         }
     }
-}
-void ActuatorStateMachine::OpenGate::_exit() {
-    m_timer.stop();
-    m_timer.reset();
-}
-
-
-// GoToTopNutBox Implementation
-void ActuatorStateMachine::GoToTopNutBoxLeftPoint::_enter() {
-    // Move to top nut box position
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_motor_1.setObjective(config::MOTOR1_GATE_TOP_OPEN_POSITION);
-        machine->m_motor_2.setObjective(config::MOTOR2_GATE_TOP_OPEN_POSITION);
+    else if (name == "GT_BOT_T7")
+    {
+        return &m_unpick_T10;
     }
-}
-void ActuatorStateMachine::GoToTopNutBoxLeftPoint::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_motor_1.run();
-        machine->m_motor_2.run();
-        if (machine->m_motor_1.isAtObjective() && machine->m_motor_2.isAtObjective()) {
-            m_stateMachine->setNextState(&machine->m_uncontrolTopNutBox);
+    else if (name == "UNPICK_T10")
+    {
+        return &m_gotoTop_T11;
+    }
+    else if (name == "GT_TOP_T11")
+    {
+        return &m_pick_T12;
+    }
+    else if (name == "PICK_T12")
+    {
+        return &m_unlock_T13;
+    }
+    else if (name == "UNLOCK_T13")
+    {
+        return &m_gotoOver_T14;
+    }
+    else if (name == "GT_OVER_T14")
+    {
+        return &m_unpick_T15;
+    }
+    else if (name == "UNPICK_T15")
+    {
+        return &m_pick_T1;
+    }
+
+    // ===== DROP SECTION TRANSITIONS =====
+    else if (name == "GT_BOT_D0")
+    {
+        return &m_unpick_D1;
+    }
+    else if (name == "UNPICK_D1")
+    {
+        removeItemFromStock();
+        if (isStockEmpty())
+        {
+            return &m_gotoIdleState;
+        }
+        else
+        {
+            return &m_gotoOver_D2;
         }
     }
-}
-void ActuatorStateMachine::GoToTopNutBoxLeftPoint::_exit() {}
-
-void ActuatorStateMachine::UncontrolTopNutBox::_enter() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_srv_top_1.write(config::SERVO_TOP_1_OPEN_ANGLE);
-        machine->m_srv_top_2.write(config::SERVO_TOP_2_OPEN_ANGLE);
-        m_timer.start();
+    else if (name == "GT_OVER_D2")
+    {
+        return &m_pick_D3;
     }
-}
-void ActuatorStateMachine::UncontrolTopNutBox::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine && m_timer.isExpired()) {
-        m_stateMachine->setNextState(&machine->m_goToBottomNutBox);
+    else if (name == "PICK_D3")
+    {
+        return &m_gotoTop_D4;
     }
-}
-void ActuatorStateMachine::UncontrolTopNutBox::_exit() {
-    m_timer.stop();
-    m_timer.reset();
-}
-
-void ActuatorStateMachine::GoToBottomNutBox::_enter() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_motor_1.setObjective(config::MOTOR1_GATE_OPEN_POSITION);
-        machine->m_motor_2.setObjective(config::MOTOR2_GATE_OPEN_POSITION);
+    else if (name == "GT_TOP_D4")
+    {
+        return &m_lock_D5;
     }
-}
-void ActuatorStateMachine::GoToBottomNutBox::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_motor_1.run();
-        machine->m_motor_2.run();
-        if (machine->m_motor_1.isAtObjective() && machine->m_motor_2.isAtObjective()) {
-            m_stateMachine->setNextState(&machine->m_getBottomNutBox);
-        }
+    else if (name == "LOCK_D5")
+    {
+        return &m_unpick_D6;
     }
-}
-void ActuatorStateMachine::GoToBottomNutBox::_exit() {}
-
-void ActuatorStateMachine::GetBottomNutBox::_enter() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_srv_top_1.write(config::SERVO_TOP_1_HOME_ANGLE);
-        machine->m_srv_top_2.write(config::SERVO_TOP_2_HOME_ANGLE);
-        m_timer.start();
+    else if (name == "UNPICK_D6")
+    {
+        return &m_gotoTop_D7;
     }
-}
-void ActuatorStateMachine::GetBottomNutBox::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine && m_timer.isExpired()) {
-        m_stateMachine->setNextState(&machine->m_goToCloseGate);
+    else if (name == "GT_TOP_D7")
+    {
+        return &m_pick_D8;
     }
-}
-void ActuatorStateMachine::GetBottomNutBox::_exit() {
-    m_timer.stop();
-    m_timer.reset();
-}
-
-// GoToCloseGate Implementation
-void ActuatorStateMachine::GoToCloseGate::_enter() {
-    // Move to gate close position
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_motor_1.setObjective(config::MOTOR1_GATE_CLOSE_POSITION);
-        machine->m_motor_2.setObjective(config::MOTOR2_GATE_CLOSE_POSITION);
+    else if (name == "PICK_D8")
+    {
+        return &m_unlock_D9;
     }
-}
-
-void ActuatorStateMachine::GoToCloseGate::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_motor_1.run();
-        machine->m_motor_2.run();
-        if (machine->m_motor_1.isAtObjective() && machine->m_motor_2.isAtObjective()) {
-            m_stateMachine->setNextState(&machine->m_closeGate);
-        }
+    else if (name == "UNLOCK_D9")
+    {
+        return &m_gotoBot_D0;
     }
-}
 
-void ActuatorStateMachine::GoToCloseGate::_exit() {
-}
-
-// CloseGate Implementation
-void ActuatorStateMachine::CloseGate::_enter() {
-    // Close the gate using servos
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        m_timer.start();
-        machine->m_srv_gripper_1.write(config::SERVO_GRIPPER_1_OPEN_ANGLE);
-        machine->m_srv_gripper_2.write(config::SERVO_GRIPPER_2_OPEN_ANGLE);
-        machine->m_isGateOpen = false;
-    }
-}
-
-void ActuatorStateMachine::CloseGate::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine && m_timer.isExpired()) {
-        // Wait for gate to fully close, then go back to idle
-        m_stateMachine->setNextState(&machine->m_goToIdleState);
-    }
-}
-
-void ActuatorStateMachine::CloseGate::_exit() {
-    m_timer.stop();
-    m_timer.reset();
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->addItemToStock();
-    }
-}
-
-// OpenArm Implementation
-void ActuatorStateMachine::OpenArm::_enter() {
-    // Open the gripper arm
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_srv_top_1.write(config::SERVO_TOP_1_OPEN_ANGLE);
-        machine->m_srv_top_2.write(config::SERVO_TOP_2_OPEN_ANGLE);
-    }
-}
-
-void ActuatorStateMachine::OpenArm::_execute() {
-    // Wait for gripper to open
-}
-
-void ActuatorStateMachine::OpenArm::_exit() {
-    // Nothing to do on exit
-}
-
-// CloseArm Implementation
-void ActuatorStateMachine::CloseArm::_enter() {
-    // Close the gripper arm
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        machine->m_srv_top_1.write(config::SERVO_TOP_1_HOME_ANGLE);
-        machine->m_srv_top_2.write(config::SERVO_TOP_2_HOME_ANGLE);
-        m_timer.start();
-    }
-}
-
-void ActuatorStateMachine::CloseArm::_execute() {
-    auto* machine = machineAs<ActuatorStateMachine>();
-    if (machine) {
-        if(machine->currentMission().has_value() && m_timer.isExpired()) {
-            if(machine->currentMission().value().type == Mission::Type::PUT_IN_STOCK) {
-                if (machine->currentMission().value().should_turn) {
-                    m_stateMachine->setNextState(&machine->m_goToRotation);
-                } else if (machine->m_isGateOpen == false){
-                    m_stateMachine->setNextState(&machine->m_goToOpenGate);
-                } else {
-                    m_stateMachine->setNextState(&machine->m_goToCloseGate);
-                }
-            } else {
-                m_stateMachine->setNextState(&machine->m_goToIdleState);
-            }
-        }
-    }
-}
-
-void ActuatorStateMachine::CloseArm::_exit() {
-    m_timer.stop();
-    m_timer.reset();
+    return nullptr;
 }

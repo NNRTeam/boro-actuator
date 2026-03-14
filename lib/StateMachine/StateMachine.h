@@ -16,6 +16,7 @@ public:
     void enter();
     void execute();
     void exit();
+    const String& name() const { return m_name; }
     virtual ~State() {}
 
 protected:

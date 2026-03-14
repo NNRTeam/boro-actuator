@@ -19,10 +19,11 @@ public:
     enum class Type
     {
         PUT_IN_STOCK,
-        DESTOCK,
+        DROP,
     };
 
     int id;
     Type type;
     bool should_turn;
+    bool should_keep;
 };

@@ -8,223 +8,95 @@
 #include <Mission/Mission.h>
 #include <vector>
 
+#include <State/GoTo/GoToIdleState.h>
+#include <State/GoTo/GoToBottom.h>
+#include <State/GoTo/GoToTop.h>
+#include <State/GoTo/GoToTurn.h>
+#include <State/GoTo/GoToOver.h>
+#include <State/ServoAction/ServoAction.h>
+#include <State/IdleState/IdleState.h>
+#include <State/Empty/Empty.h>
+#include <State/KeptItem/KeptItem.h>
+#include <State/StockLocked/StockLocked.h>
+
 class ActuatorStateMachine : public StateMachine
 {
 public:
-
-    ActuatorStateMachine(Servo srv_top_1, Servo srv_top_2,
-                        Servo srv_bottom_1, Servo srv_bottom_2,
-                        Servo srv_gripper_1, Servo srv_gripper_2,
-                        ColorSensor colorSensor, Motor motor_1, Motor motor_2) : StateMachine(&m_goToIdleState),
-                                                  m_srv_top_1(srv_top_1),
-                                                  m_srv_top_2(srv_top_2),
-                                                  m_srv_bottom_1(srv_bottom_1),
-                                                  m_srv_bottom_2(srv_bottom_2),
-                                                  m_srv_gripper_1(srv_gripper_1),
-                                                  m_srv_gripper_2(srv_gripper_2),
-                                                  m_colorSensor(colorSensor),
-                                                  m_motor_1(motor_1),
-                                                  m_motor_2(motor_2) {};
+    ActuatorStateMachine(Servo srv_top_1,
+                         Servo srv_top_2,
+                         Servo srv_bottom_1,
+                         Servo srv_bottom_2,
+                         Servo srv_gripper_1,
+                         Servo srv_gripper_2,
+                         ColorSensor colorSensor,
+                         Motor motor_1,
+                         Motor motor_2)
+        : StateMachine(&m_gotoIdleState)
+        , m_srv_top_1(srv_top_1)
+        , m_srv_top_2(srv_top_2)
+        , m_srv_bottom_1(srv_bottom_1)
+        , m_srv_bottom_2(srv_bottom_2)
+        , m_srv_gripper_1(srv_gripper_1)
+        , m_srv_gripper_2(srv_gripper_2)
+        , m_colorSensor(colorSensor)
+        , m_motor_1(motor_1)
+        , m_motor_2(motor_2)
+        ,
+        // Main states
+        m_gotoIdleState(this, "GT_IDLE")
+        , m_idleState(this)
+        ,
+        // TAKE section states
+        m_gotoBot_T0(this, "GT_BOT_T0")
+        , m_pick_T1(this, "PICK_T1")
+        , m_gotoTop_T2(this, "GT_TOP_T2")
+        , m_lock_T3(this, "LOCK_T3")
+        , m_unpick_T4(this, "UNPICK_T4")
+        , m_gotoTurn_T5(this, "GT_TURN_T5")
+        , m_turn_T6(this, "TURN_T6")
+        , m_gotoBot_T7(this, "GT_BOT_T7")
+        , m_gotoBot_T8(this, "GT_BOT_T8")
+        , m_gotoBot_T9(this, "GT_BOT_T9")
+        , m_unpick_T10(this, "UNPICK_T10")
+        , m_gotoTop_T11(this, "GT_TOP_T11")
+        , m_pick_T12(this, "PICK_T12")
+        , m_unlock_T13(this, "UNLOCK_T13")
+        , m_gotoOver_T14(this, "GT_OVER_T14")
+        , m_unpick_T15(this, "UNPICK_T15")
+        ,
+        // DROP section states
+        m_gotoBot_D0(this, "GT_BOT_D0")
+        , m_unpick_D1(this, "UNPICK_D1")
+        , m_gotoOver_D2(this, "GT_OVER_D2")
+        , m_pick_D3(this, "PICK_D3")
+        , m_gotoTop_D4(this, "GT_TOP_D4")
+        , m_lock_D5(this, "LOCK_D5")
+        , m_unpick_D6(this, "UNPICK_D6")
+        , m_gotoTop_D7(this, "GT_TOP_D7")
+        , m_pick_D8(this, "PICK_D8")
+        , m_unlock_D9(this, "UNLOCK_D9"){};
 
     void run() override;
     void serialParser();
     void sendMissionState(int missionId, MissionStatus status);
 
-    class GoToIdleState: public State
-    {
-    public:
-        GoToIdleState(StateMachine* stateMachine) : State(stateMachine, "GoToIdle") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    private:
-        Timer m_timer{700000};
-    } m_goToIdleState{this};
+    State* computeNextState(State* currentState) const;
 
-    class IdleState: public State
-    {
-    public:
-        IdleState(StateMachine* stateMachine) : State(stateMachine, "Idle") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    private:
-        Timer m_timer{3000000};
-    } m_idleState{this};
-
-    class GoToRotation: public State
-    {
-    public:
-        GoToRotation(StateMachine* stateMachine) : State(stateMachine, "GoToRotation") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    private:
-        Timer m_timer{500000};
-    } m_goToRotation{this};
-
-    class TurnToColor: public State
-    {
-    public:
-        TurnToColor(StateMachine* stateMachine) : State(stateMachine, "TurnToColor") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    private:
-        Timer m_timer{700000};
-    } m_turnToColor{this};
-
-    class GoToOpenGate: public State
-    {
-    public:
-        GoToOpenGate(StateMachine* stateMachine) : State(stateMachine, "GoToOpenGate") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    } m_goToOpenGate{this};
-
-    class UncontrolBottomNutBox: public State
-    {
-    public:
-        UncontrolBottomNutBox(StateMachine* stateMachine) : State(stateMachine, "UncontrolBottomNutBox") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    private:
-        Timer m_timer{300000};
-    } m_uncontrolBottomNutBox{this};
-
-    class GoToTopNutBox: public State
-    {
-    public:
-        GoToTopNutBox(StateMachine* stateMachine) : State(stateMachine, "GoToTopNutBox") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    } m_goToTopNutBox{this};
-
-    class GetTopNutBox: public State
-    {
-    public:
-        GetTopNutBox(StateMachine* stateMachine) : State(stateMachine, "GetTopNutBox") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    private:
-        Timer m_timer{500000};
-    } m_getTopNutBox{this};
-
-    class OpenGate: public State
-    {
-    public:
-        OpenGate(StateMachine* stateMachine) : State(stateMachine, "OpenGate") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    private:
-        Timer m_timer{500000};
-    } m_openGate{this};
-
-    class GoToTopNutBoxLeftPoint: public State
-    {
-    public:
-        GoToTopNutBoxLeftPoint(StateMachine* stateMachine) : State(stateMachine, "GoToTopNutBoxLeftPoint") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    } m_goToTopNutBoxLeftPoint{this};
-
-    class UncontrolTopNutBox: public State
-    {
-    public:
-        UncontrolTopNutBox(StateMachine* stateMachine) : State(stateMachine, "UncontrolTopNutBox") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    private:
-        Timer m_timer{300000};
-    } m_uncontrolTopNutBox{this};
-
-    class GoToBottomNutBox: public State
-    {
-    public:
-        GoToBottomNutBox(StateMachine* stateMachine) : State(stateMachine, "GoToBottomNutBox") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    } m_goToBottomNutBox{this};
-
-    class GetBottomNutBox: public State
-    {
-    public:
-        GetBottomNutBox(StateMachine* stateMachine) : State(stateMachine, "GetBottomNutBox") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    private:
-        Timer m_timer{500000};
-    } m_getBottomNutBox{this};
-
-    class GoToCloseGate: public State
-    {
-    public:
-        GoToCloseGate(StateMachine* stateMachine) : State(stateMachine, "GoToCloseGate") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    } m_goToCloseGate{this};
-
-    class CloseGate: public State
-    {
-    public:
-        CloseGate(StateMachine* stateMachine) : State(stateMachine, "CloseGate") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    private:
-        Timer m_timer{200000};
-    } m_closeGate{this};
-
-    class OpenArm: public State
-    {
-    public:
-        OpenArm(StateMachine* stateMachine) : State(stateMachine, "OpenArm") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    private:
-        Timer m_timer{300000};
-    } m_openArm{this};
-
-    class CloseArm: public State
-    {
-    public:
-        CloseArm(StateMachine* stateMachine) : State(stateMachine, "CloseArm") {}
-    protected:
-        void _enter() override;
-        void _execute() override;
-        void _exit() override;
-    private:
-        Timer m_timer{500000};
-    } m_closeArm{this};
+    friend class GoToIdleState;
+    friend class GoToBottom;
+    friend class GoToTop;
+    friend class GoToTurn;
+    friend class GoToOver;
+    friend class ServoAction;
+    friend class IdleState;
+    friend class Pick;
+    friend class Unpick;
+    friend class Lock;
+    friend class Unlock;
+    friend class Turn;
 
 
+protected:
     Servo m_srv_top_1;
     Servo m_srv_top_2;
     Servo m_srv_bottom_1;
@@ -238,7 +110,9 @@ public:
     Motor m_motor_2;
 
     [[nodiscard]] std::optional<Mission> currentMission() const
-        { return m_missions.empty() ? std::nullopt : std::make_optional(m_missions.front()); }
+    {
+        return m_missions.empty() ? std::nullopt : std::make_optional(m_missions.front());
+    }
 
     [[nodiscard]] std::optional<Mission> nextMission() const
         { return m_missions.size() < 2 ? std::nullopt : std::make_optional(m_missions[1]); }
@@ -251,8 +125,59 @@ public:
     void addItemToStock() { m_currentStock++; }
     void removeItemFromStock() { if (m_currentStock > 0) m_currentStock--; }
     [[nodiscard]] bool isStockEmpty() const { return m_currentStock == 0; }
+
+    void lockStock() { m_isLocked = true; }
+    void unlockStock() { m_isLocked = false; }
+    [[nodiscard]] bool isStockLocked() const { return m_isLocked; }
+
+    void keepItem() { m_isKept = true; }
+    void releaseKeptItem() { m_isKept = false; }
+    [[nodiscard]] bool isItemKept() const { return m_isKept; }
+
 protected:
     std::vector<Mission> m_missions;
     int m_currentStock = 0;
     bool m_isGateOpen = true;
+    bool m_isKept = false;
+    bool m_isLocked = false;
+
+    // Main state instances
+    GoToIdleState m_gotoIdleState;
+    IdleState m_idleState;
+
+    // TAKE section state instances
+    GoToBottom m_gotoBot_T0;
+    Pick m_pick_T1;
+    GoToTop m_gotoTop_T2;
+    Lock m_lock_T3;
+    Unpick m_unpick_T4;
+    GoToTurn m_gotoTurn_T5;
+    Turn m_turn_T6;
+    GoToBottom m_gotoBot_T7;
+    GoToBottom m_gotoBot_T8;
+    GoToBottom m_gotoBot_T9;
+    Unpick m_unpick_T10;
+    GoToTop m_gotoTop_T11;
+    Pick m_pick_T12;
+    Unlock m_unlock_T13;
+    GoToOver m_gotoOver_T14;
+    Unpick m_unpick_T15;
+
+    // DROP section state instances
+    GoToBottom m_gotoBot_D0;
+    Unpick m_unpick_D1;
+    GoToOver m_gotoOver_D2;
+    Pick m_pick_D3;
+    GoToTop m_gotoTop_D4;
+    Lock m_lock_D5;
+    Unpick m_unpick_D6;
+    GoToTop m_gotoTop_D7;
+    Pick m_pick_D8;
+    Unlock m_unlock_D9;
 };
+
+#include <State/ServoAction/Pick.h>
+#include <State/ServoAction/Unpick.h>
+#include <State/ServoAction/Lock.h>
+#include <State/ServoAction/Unlock.h>
+#include <State/ServoAction/Turn.h>
