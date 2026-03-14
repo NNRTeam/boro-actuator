@@ -36,27 +36,28 @@ void ActuatorStateMachine::serialParser() {
     }
 }
 
-State* ActuatorStateMachine::computeNextState(State* currentState) const
+State* ActuatorStateMachine::computeNextState(State* currentState)
 {
     if (!currentState)
         return nullptr;
 
     const String& name = currentState->name();
-    auto mission = currentMission();
-    if (!mission.has_value())
-    {
-        m_logger.warn("No current mission, cannot compute next state from " + name);
-        return nullptr;
-    }
-    bool shouldTurn = mission ? mission->should_turn : false;
-    bool shouldKeep = mission ? mission->should_keep : false;
 
     // ===== MAIN STATES TRANSITIONS =====
     if (name == "GT_IDLE")
     {
         return &m_idleState;
     }
-    else if (name == "IDLE")
+
+    auto mission = currentMission();
+    if (!mission.has_value())
+    {
+        return nullptr;
+    }
+    bool shouldTurn = mission ? mission->should_turn : false;
+    bool shouldKeep = mission ? mission->should_keep : false;
+
+    if (name == "IDLE")
     {
         if (mission)
         {
@@ -83,19 +84,20 @@ State* ActuatorStateMachine::computeNextState(State* currentState) const
         }
         return &m_pick_T1;
     }
-    else if (name == "pick_T1")
+    else if (name == "PICK_T1")
     {
-        addItemToStock();
         if (shouldTurn)
         {
             return &m_gotoTurn_T5;
         }
         else if (shouldKeep)
         {
+            addItemToStock();
             return &m_gotoIdleState;
         }
         else
         {
+            addItemToStock();
             return &m_gotoTop_T2;
         }
     }
@@ -198,7 +200,7 @@ State* ActuatorStateMachine::computeNextState(State* currentState) const
     }
     else if (name == "UNPICK_D6")
     {
-        return &m_gotoTop_D7;
+        return &m_gotoIdleState;
     }
     else if (name == "GT_TOP_D7")
     {

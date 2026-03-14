@@ -1,5 +1,6 @@
 #pragma once
 #include "GoToBase.h"
+#include <Config.h>
 
 class StateMachine;
 

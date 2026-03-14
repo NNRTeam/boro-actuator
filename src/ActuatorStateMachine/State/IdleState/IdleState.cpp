@@ -1,4 +1,4 @@
-#include "IdleState.h"
+#include <ActuatorStateMachine/State/IdleState/IdleState.h>
 #include <ActuatorStateMachine/ActuatorStateMachine.h>
 #include <Mission/Mission.h>
 
@@ -17,25 +17,18 @@ void IdleState::_enter()
 void IdleState::_execute()
 {
     auto* machine = machineAs<ActuatorStateMachine>();
-    if (!machine) return;
+    if (!machine)
+        return;
 
     auto missionOpt = machine->currentMission();
-    if (!missionOpt.has_value()) return;
-
-    const Mission& mission = missionOpt.value();
-    machine->sendMissionState(mission.id, MissionStatus::STARTED);
-
-    if (mission.type != Mission::Type::PUT_IN_STOCK) {
-        m_stateMachine->setNextState(&machine->m_openArm);
+    if (!missionOpt.has_value())
         return;
-    }
 
-    if (!mission.should_turn && !machine->isStockEmpty()) {
-        m_stateMachine->setNextState(&machine->m_goToTopNutBox);
-        return;
+    machine->sendMissionState(missionOpt->id, MissionStatus::STARTED);
+    State* nextState = machine->computeNextState(this);
+    if (nextState != nullptr) {
+        m_stateMachine->setNextState(nextState);
     }
-
-    m_stateMachine->setNextState(&machine->m_closeArm);
 }
 
 void IdleState::_exit()

@@ -1,4 +1,4 @@
-#include "GoToIdleState.h"
+#include <ActuatorStateMachine/State/GoTo/GoToIdleState.h>
 #include <ActuatorStateMachine/ActuatorStateMachine.h>
 #include <Config.h>
 
@@ -11,6 +11,8 @@ void GoToIdleState::_enter()
         if (!machine->isItemKept()) {
             machine->m_srv_bottom_1.write(config::SERVO_BOTTOM_1_HOME_ANGLE);
             machine->m_srv_bottom_2.write(config::SERVO_BOTTOM_2_HOME_ANGLE);
+            machine->m_srv_top_1.write(config::SERVO_TOP_1_OPEN_ANGLE);
+            machine->m_srv_top_2.write(config::SERVO_TOP_2_OPEN_ANGLE);
         }
         if (machine->isStockEmpty()) {
             machine->m_srv_gripper_1.write(config::SERVO_GRIPPER_1_HOME_ANGLE);

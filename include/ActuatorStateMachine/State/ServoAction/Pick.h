@@ -1,28 +1,22 @@
 #pragma once
 
-#include <State/ServoAction/ServoAction.h>
-#include <ActuatorStateMachine/ActuatorStateMachine.h>
+#include <ActuatorStateMachine/State/ServoAction/ServoAction.h>
+#include <Config.h>
 
 class Pick : public ServoAction
 {
 public:
-    Pick(StateMachine* stateMachine, const String& name)
+    Pick(StateMachine* stateMachine, const String& name, Servo& srv1, Servo& srv2)
         : ServoAction(stateMachine,
                       name,
-                      config::SERVO_GRIPPER_1_OPEN_ANGLE,
-                      config::SERVO_GRIPPER_2_OPEN_ANGLE,
-                      machineAs<ActuatorStateMachine>()->m_srv_gripper_1,
-                      machineAs<ActuatorStateMachine>()->m_srv_gripper_2,
-                      Timer(500000),
+                      config::SERVO_TOP_1_HOME_ANGLE,
+                      config::SERVO_TOP_2_HOME_ANGLE,
+                      srv1,
+                      srv2,
+                      Timer(1000000),
                       1)
-    {
-    }
+    {}
+
 protected:
-    void _exit() override
-    {
-        auto* machine = machineAs<ActuatorStateMachine>();
-        if (machine) {
-            machine->keepItem();
-        }
-    }
+    void _exit() override;
 };

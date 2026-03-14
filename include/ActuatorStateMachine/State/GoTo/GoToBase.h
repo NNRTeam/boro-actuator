@@ -5,7 +5,7 @@
 class GoToBase : public State
 {
 public:
-    GoTo(StateMachine* stateMachine, const String& name, int posMotor1, int posMotor2)
+    GoToBase(StateMachine* stateMachine, const String& name, int posMotor1, int posMotor2)
         : State(stateMachine, name)
         , m_posMotor1(posMotor1)
         , m_posMotor2(posMotor2)

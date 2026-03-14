@@ -7,17 +7,20 @@
 #include <Motor.h>
 #include <Mission/Mission.h>
 #include <vector>
+#include <optional>
 
-#include <State/GoTo/GoToIdleState.h>
-#include <State/GoTo/GoToBottom.h>
-#include <State/GoTo/GoToTop.h>
-#include <State/GoTo/GoToTurn.h>
-#include <State/GoTo/GoToOver.h>
-#include <State/ServoAction/ServoAction.h>
-#include <State/IdleState/IdleState.h>
-#include <State/Empty/Empty.h>
-#include <State/KeptItem/KeptItem.h>
-#include <State/StockLocked/StockLocked.h>
+#include <ActuatorStateMachine/State/GoTo/GoToIdleState.h>
+#include <ActuatorStateMachine/State/GoTo/GoToBottom.h>
+#include <ActuatorStateMachine/State/GoTo/GoToTop.h>
+#include <ActuatorStateMachine/State/GoTo/GoToTurn.h>
+#include <ActuatorStateMachine/State/GoTo/GoToOver.h>
+#include <ActuatorStateMachine/State/ServoAction/ServoAction.h>
+#include <ActuatorStateMachine/State/IdleState/IdleState.h>
+#include <ActuatorStateMachine/State/ServoAction/Pick.h>
+#include <ActuatorStateMachine/State/ServoAction/Unpick.h>
+#include <ActuatorStateMachine/State/ServoAction/Lock.h>
+#include <ActuatorStateMachine/State/ServoAction/Unlock.h>
+#include <ActuatorStateMachine/State/ServoAction/Turn.h>
 
 class ActuatorStateMachine : public StateMachine
 {
@@ -43,46 +46,47 @@ public:
         , m_motor_2(motor_2)
         ,
         // Main states
-        m_gotoIdleState(this, "GT_IDLE")
+        m_gotoIdleState(this)
         , m_idleState(this)
         ,
         // TAKE section states
         m_gotoBot_T0(this, "GT_BOT_T0")
-        , m_pick_T1(this, "PICK_T1")
+        , m_pick_T1(this, "PICK_T1", m_srv_top_1, m_srv_top_2)
         , m_gotoTop_T2(this, "GT_TOP_T2")
-        , m_lock_T3(this, "LOCK_T3")
-        , m_unpick_T4(this, "UNPICK_T4")
+        , m_lock_T3(this, "LOCK_T3", m_srv_gripper_1, m_srv_gripper_2)
+        , m_unpick_T4(this, "UNPICK_T4", m_srv_top_1, m_srv_top_2)
         , m_gotoTurn_T5(this, "GT_TURN_T5")
-        , m_turn_T6(this, "TURN_T6")
+        , m_turn_T6(this, "TURN_T6", m_srv_bottom_1, m_srv_bottom_2)
         , m_gotoBot_T7(this, "GT_BOT_T7")
         , m_gotoBot_T8(this, "GT_BOT_T8")
         , m_gotoBot_T9(this, "GT_BOT_T9")
-        , m_unpick_T10(this, "UNPICK_T10")
+        , m_unpick_T10(this, "UNPICK_T10", m_srv_top_1, m_srv_top_2)
         , m_gotoTop_T11(this, "GT_TOP_T11")
-        , m_pick_T12(this, "PICK_T12")
-        , m_unlock_T13(this, "UNLOCK_T13")
+        , m_pick_T12(this, "PICK_T12", m_srv_top_1, m_srv_top_2)
+        , m_unlock_T13(this, "UNLOCK_T13", m_srv_gripper_1, m_srv_gripper_2)
         , m_gotoOver_T14(this, "GT_OVER_T14")
-        , m_unpick_T15(this, "UNPICK_T15")
+        , m_unpick_T15(this, "UNPICK_T15", m_srv_top_1, m_srv_top_2)
         ,
         // DROP section states
         m_gotoBot_D0(this, "GT_BOT_D0")
-        , m_unpick_D1(this, "UNPICK_D1")
+        , m_unpick_D1(this, "UNPICK_D1", m_srv_top_1, m_srv_top_2)
         , m_gotoOver_D2(this, "GT_OVER_D2")
-        , m_pick_D3(this, "PICK_D3")
+        , m_pick_D3(this, "PICK_D3", m_srv_top_1, m_srv_top_2)
         , m_gotoTop_D4(this, "GT_TOP_D4")
-        , m_lock_D5(this, "LOCK_D5")
-        , m_unpick_D6(this, "UNPICK_D6")
+        , m_lock_D5(this, "LOCK_D5", m_srv_gripper_1, m_srv_gripper_2)
+        , m_unpick_D6(this, "UNPICK_D6", m_srv_top_1, m_srv_top_2)
         , m_gotoTop_D7(this, "GT_TOP_D7")
-        , m_pick_D8(this, "PICK_D8")
-        , m_unlock_D9(this, "UNLOCK_D9"){};
+        , m_pick_D8(this, "PICK_D8", m_srv_top_1, m_srv_top_2)
+        , m_unlock_D9(this, "UNLOCK_D9", m_srv_gripper_1, m_srv_gripper_2){};
 
     void run() override;
     void serialParser();
     void sendMissionState(int missionId, MissionStatus status);
 
-    State* computeNextState(State* currentState) const;
+    State* computeNextState(State* currentState);
 
     friend class GoToIdleState;
+    friend class GoToBase;
     friend class GoToBottom;
     friend class GoToTop;
     friend class GoToTurn;
@@ -175,9 +179,3 @@ protected:
     Pick m_pick_D8;
     Unlock m_unlock_D9;
 };
-
-#include <State/ServoAction/Pick.h>
-#include <State/ServoAction/Unpick.h>
-#include <State/ServoAction/Lock.h>
-#include <State/ServoAction/Unlock.h>
-#include <State/ServoAction/Turn.h>

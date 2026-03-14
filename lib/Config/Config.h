@@ -24,7 +24,7 @@ namespace config {
     float constexpr MOTOR_STEPS_PER_REVOLUTION = 200.0; // Steps per revolution for the stepper motors
     float constexpr MOTOR_MICROSTEPPING = 1.0; // Microstepping setting for the stepper drivers
 
-    int constexpr MOTOR1_HOME_POSITION = 470; // Home position for motor 1
+    int constexpr MOTOR1_HOME_POSITION = 490; // Home position for motor 1
     int constexpr MOTOR2_HOME_POSITION = 470; // Home position for motor 2
 
     int constexpr MOTOR1_BASE_POSITION = 0; // Base position for motor 1

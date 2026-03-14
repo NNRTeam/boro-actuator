@@ -1,7 +1,7 @@
-#include "GoToBase.h"
+#include <ActuatorStateMachine/State/GoTo/GoToBase.h>
 #include <ActuatorStateMachine/ActuatorStateMachine.h>
 
-void GoTo::_enter()
+void GoToBase::_enter()
 {
     auto* machine = machineAs<ActuatorStateMachine>();
     if (machine) {
