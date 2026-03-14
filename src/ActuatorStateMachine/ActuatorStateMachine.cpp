@@ -156,6 +156,10 @@ State* ActuatorStateMachine::computeNextState(State* currentState) const
     }
     else if (name == "UNPICK_T15")
     {
+        return &m_gotoBot_T9;
+    }
+    else if (name == "GT_BOT_T9")
+    {
         return &m_pick_T1;
     }
 
