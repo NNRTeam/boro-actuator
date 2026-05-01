@@ -10,6 +10,7 @@
 #include <optional>
 
 #include <ActuatorStateMachine/State/GoTo/GoToIdleState.h>
+#include <ActuatorStateMachine/State/GoTo/GoToIdleStateTop.h>
 #include <ActuatorStateMachine/State/GoTo/GoToBottom.h>
 #include <ActuatorStateMachine/State/GoTo/GoToTop.h>
 #include <ActuatorStateMachine/State/GoTo/GoToTurn.h>
@@ -87,6 +88,7 @@ public:
 
     State* computeNextState(State* currentState);
 
+    friend class GoToIdleStateTop;
     friend class GoToIdleState;
     friend class GoToBase;
     friend class GoToBottom;

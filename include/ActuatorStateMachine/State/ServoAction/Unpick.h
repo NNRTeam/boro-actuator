@@ -13,7 +13,7 @@ public:
                       config::SERVO_TOP_2_OPEN_ANGLE,
                       srv1,
                       srv2,
-                      Timer(1000000),
+                      Timer(500000),
                       -1)
     {}
 

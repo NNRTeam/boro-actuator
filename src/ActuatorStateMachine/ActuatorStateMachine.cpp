@@ -35,12 +35,13 @@ void ActuatorStateMachine::serialParser() {
         }
     }
     else if (input.length() > 0 && input[0] == 'T'){ // go to idle state top
-        if (!currentState)
-            return nullptr;
-        const String& name = currentState->name();
+        if (!m_currentState)
+            return;
+
+        const String& name = m_currentState->name();
         if (name == "IDLE" && !isItemKept())
         {
-            m_stateMachine->setNextState(&m_gotoIdleStateTop);
+            setNextState(&m_gotoIdleStateTop);
         }
         else
         {
@@ -48,12 +49,12 @@ void ActuatorStateMachine::serialParser() {
         }
     }
     else if (input.length() > 0 && input[0] == 'B'){ // go to idle state bottom
-        if (!currentState)
-            return nullptr;
-        const String& name = currentState->name();
+        if (!m_currentState)
+            return;
+        const String& name = m_currentState->name();
         if (name == "IDLE_TOP")
         {
-            m_stateMachine->setNextState(&m_gotoIdleState);
+            setNextState(&m_gotoIdleState);
         }
         else
         {

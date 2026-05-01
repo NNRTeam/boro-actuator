@@ -37,7 +37,7 @@ public:
     virtual void run();
     void setNextState(State* state) { m_nextState = state; };
 
-private:
+protected:
     State* m_currentState = nullptr;
     State* m_nextState = nullptr;
 };
