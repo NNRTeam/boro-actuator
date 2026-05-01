@@ -38,6 +38,9 @@ int32_t Motor::getObjective() const
 
 void Motor::run()
 {
+    if (m_currentPosition == m_objectivePosition)
+        return; // Already at objective, do nothing
+
     if (!m_enabled)
         _enable(true);
 

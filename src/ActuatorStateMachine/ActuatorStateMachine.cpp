@@ -113,7 +113,6 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
     }
 
     const String& name = currentState->name();
-    m_logger.debug("computeNextState from: " + name);
 
     // ===== MAIN STATES TRANSITIONS =====
     if (name == "GT_IDLE")
@@ -125,36 +124,33 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
         return &m_idleStateTop;
     }
 
-    auto mission = currentMission();
-    if (!mission.has_value())
+    const Mission* mission = currentMissionPtr();
+    if (!mission)
     {
         m_logger.warn("computeNextState: No current mission available");
         return nullptr;
     }
-    bool shouldTurn = mission ? mission->should_turn : false;
-    bool shouldKeep = mission ? mission->should_keep : false;
+    bool shouldTurn = mission->should_turn;
+    bool shouldKeep = mission->should_keep;
 
     if (name == "IDLE")
     {
-        if (mission)
+        if (mission->type == Mission::Type::PUT_IN_STOCK && !isItemKept())
         {
-            if (mission->type == Mission::Type::PUT_IN_STOCK && !isItemKept())
-            {
-                return &m_gotoBot_T0;
-            }
-            else if (mission->type == Mission::Type::PUT_IN_STOCK && isItemKept())
-            {
-                // Item already kept in gripper, go directly to stock it
-                return &m_gotoTop_T2;
-            }
-            else if (mission->type == Mission::Type::DROP && isItemKept())
-            {
-                return &m_gotoBot_D0;
-            }
-            else if (mission->type == Mission::Type::DROP && !isItemKept())
-            {
-                return &m_gotoTop_D7;
-            }
+            return &m_gotoBot_T0;
+        }
+        else if (mission->type == Mission::Type::PUT_IN_STOCK && isItemKept())
+        {
+            // Item already kept in gripper, go directly to stock it
+            return &m_gotoTop_T2;
+        }
+        else if (mission->type == Mission::Type::DROP && isItemKept())
+        {
+            return &m_gotoBot_D0;
+        }
+        else if (mission->type == Mission::Type::DROP && !isItemKept())
+        {
+            return &m_gotoTop_D7;
         }
     }
     // ===== TAKE SECTION TRANSITIONS =====

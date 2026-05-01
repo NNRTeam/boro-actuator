@@ -6,9 +6,8 @@
 #include <Timer.h>
 #include <Motor.h>
 #include <Mission/Mission.h>
+#include <Mission/MissionQueue.h>
 #include <Logger.h>
-#include <vector>
-#include <optional>
 
 #include <ActuatorStateMachine/State/GoTo/GoToIdleState.h>
 #include <ActuatorStateMachine/State/GoTo/GoToIdleStateTop.h>
@@ -118,20 +117,16 @@ protected:
     Motor m_motor_1;
     Motor m_motor_2;
 
-    [[nodiscard]] std::optional<Mission> currentMission() const
-    {
-        return m_missions.empty() ? std::nullopt : std::make_optional(m_missions.front());
-    }
+    // Returns a pointer to the current mission (nullptr if none)
+    [[nodiscard]] Mission* currentMissionPtr() { return m_missions.front(); }
+    [[nodiscard]] const Mission* currentMissionPtr() const { return m_missions.front(); }
 
-    // Returns a pointer to the actual current mission (mutable access)
-    [[nodiscard]] Mission* currentMissionPtr() { return m_missions.empty() ? nullptr : &m_missions.front(); }
+    // Returns a pointer to the next mission after the current one (nullptr if none)
+    [[nodiscard]] const Mission* nextMissionPtr() const { return m_missions.at(1); }
 
-    [[nodiscard]] std::optional<Mission> nextMission() const
-        { return m_missions.size() < 2 ? std::nullopt : std::make_optional(m_missions[1]); }
+    void finishCurrentMission() { m_missions.pop(); }
 
-    void finishCurrentMission() { if (!m_missions.empty()) m_missions.erase(m_missions.begin()); }
-
-    void addMission(const Mission& mission) { m_missions.push_back(mission); }
+    bool addMission(const Mission& mission) { return m_missions.push(mission); }
 
     [[nodiscard]] int getCurrentStock() const { return m_currentStock; }
     void addItemToStock() { m_currentStock++; }
@@ -147,7 +142,7 @@ protected:
     [[nodiscard]] bool isItemKept() const { return m_isKept; }
 
 protected:
-    std::vector<Mission> m_missions;
+    MissionQueue m_missions;
     int m_currentStock = 0;
     bool m_isGateOpen = true;
     bool m_isKept = false;

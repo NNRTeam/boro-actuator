@@ -7,7 +7,6 @@ State::State(StateMachine* stateMachine, const String& name) : m_stateMachine(st
 
 void State::enter()
 {
-    m_logger.info("Entering state: " + m_name);
     _enter();
 }
 
@@ -18,7 +17,6 @@ void State::execute()
 
 void State::exit()
 {
-    m_logger.info("Exiting state: " + m_name);
     _exit();
 }
 
