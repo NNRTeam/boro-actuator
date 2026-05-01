@@ -3,13 +3,10 @@
 #include <StateMachine.h>
 #include <Timer.h>
 
-class IdleState : public State
+class GoToIdleStateTop : public State
 {
 public:
-    IdleState(StateMachine* stateMachine)
-        : State(stateMachine, "IDLE")
-    {
-    }
+    GoToIdleStateTop(StateMachine* stateMachine) : State(stateMachine, "GoToIdleTop") {}
 
 protected:
     void _enter() override;
@@ -17,5 +14,5 @@ protected:
     void _exit() override;
 
 private:
-    Timer m_timer{1000000};
+    Timer m_timer{700000};
 };
