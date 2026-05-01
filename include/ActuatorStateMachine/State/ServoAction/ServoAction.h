@@ -22,6 +22,7 @@ public:
         , m_srv2(srv2)
         , m_timer(timer)
         , m_id(id)
+        , m_startTime(0)
     {
     }
 
@@ -37,4 +38,5 @@ private:
     Servo& m_srv2;
     Timer m_timer;
     u_int64_t m_id;
+    unsigned long m_startTime;
 };

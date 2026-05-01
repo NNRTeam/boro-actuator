@@ -41,8 +41,9 @@ void Turn::_exit()
 {
     auto* machine = machineAs<ActuatorStateMachine>();
     if (machine) {
-        auto mission = machine->currentMission();
-        if (mission.has_value()) {
+        Mission* mission = machine->currentMissionPtr();
+        if (mission)
+        {
             mission->should_turn = false;
         }
     }

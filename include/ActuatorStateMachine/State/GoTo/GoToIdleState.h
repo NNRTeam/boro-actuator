@@ -15,4 +15,5 @@ protected:
 
 private:
     Timer m_timer{700000};
+    unsigned long m_timeout = 0;
 };

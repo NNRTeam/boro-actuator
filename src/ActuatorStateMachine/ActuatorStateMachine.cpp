@@ -13,11 +13,40 @@ void ActuatorStateMachine::sendMissionState(int missionId, MissionStatus status)
 }
 
 void ActuatorStateMachine::serialParser() {
-    String input = "";
-    while (Serial.available() > 0 && (input.length() == 0 || input[input.length() - 1] != 'F')) {
-        input += (char)Serial.read();
+    static char buffer[130];
+    uint8_t bufIdx = 0;
+    unsigned long startTime = millis();
+
+    // Read with timeout to prevent blocking
+    while (Serial.available() > 0 && (millis() - startTime < config::SERIAL_TIMEOUT_MS))
+    {
+        char c = Serial.read();
+        buffer[bufIdx++] = c;
+
+        // Check if we've received a complete message
+        if (c == 'F')
+        {
+            break;
+        }
+
+        // Limit input size to prevent buffer overflow
+        if (bufIdx >= 128)
+        {
+            m_logger.error("Serial input too long, discarding.");
+            return;
+        }
     }
-    if (input.length() > 0 && input[0] == 'M'){
+
+    if (bufIdx == 0)
+    {
+        return;
+    }
+
+    buffer[bufIdx] = '\0';
+    String input(buffer);
+
+    if (input[0] == 'M')
+    {
         int firstSemicolon = input.indexOf(';');
         int secondSemicolon = input.indexOf(';', firstSemicolon + 1);
         int thirdSemicolon = input.indexOf(';', secondSemicolon + 1);
@@ -33,10 +62,18 @@ void ActuatorStateMachine::serialParser() {
             bool shouldKeepBool = shouldKeep != 0;
             addMission({id, missionType, shouldTurnBool, shouldKeepBool});
         }
+        else
+        {
+            m_logger.warn("Invalid mission format received.");
+        }
     }
-    else if (input.length() > 0 && input[0] == 'T'){ // go to idle state top
+    else if (input[0] == 'T')
+    { // go to idle state top
         if (!m_currentState)
+        {
+            m_logger.warn("No current state for T command.");
             return;
+        }
 
         const String& name = m_currentState->name();
         if (name == "IDLE" && !isItemKept())
@@ -48,9 +85,13 @@ void ActuatorStateMachine::serialParser() {
             Serial.println("ETF");
         }
     }
-    else if (input.length() > 0 && input[0] == 'B'){ // go to idle state bottom
+    else if (input[0] == 'B')
+    { // go to idle state bottom
         if (!m_currentState)
+        {
+            m_logger.warn("No current state for B command.");
             return;
+        }
         const String& name = m_currentState->name();
         if (name == "IDLE_TOP")
         {
@@ -61,15 +102,18 @@ void ActuatorStateMachine::serialParser() {
             Serial.println("EBF");
         }
     }
-
 }
 
 State* ActuatorStateMachine::computeNextState(State* currentState)
 {
     if (!currentState)
+    {
+        m_logger.error("computeNextState: currentState is nullptr");
         return nullptr;
+    }
 
     const String& name = currentState->name();
+    m_logger.debug("computeNextState from: " + name);
 
     // ===== MAIN STATES TRANSITIONS =====
     if (name == "GT_IDLE")
@@ -84,6 +128,7 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
     auto mission = currentMission();
     if (!mission.has_value())
     {
+        m_logger.warn("computeNextState: No current mission available");
         return nullptr;
     }
     bool shouldTurn = mission ? mission->should_turn : false;
@@ -96,6 +141,11 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
             if (mission->type == Mission::Type::PUT_IN_STOCK && !isItemKept())
             {
                 return &m_gotoBot_T0;
+            }
+            else if (mission->type == Mission::Type::PUT_IN_STOCK && isItemKept())
+            {
+                // Item already kept in gripper, go directly to stock it
+                return &m_gotoTop_T2;
             }
             else if (mission->type == Mission::Type::DROP && isItemKept())
             {
@@ -247,5 +297,6 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
         return &m_gotoBot_D0;
     }
 
+    m_logger.error("computeNextState: Unknown state " + name);
     return nullptr;
 }

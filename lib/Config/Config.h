@@ -71,6 +71,11 @@ namespace config {
 
     unsigned long int constexpr MOTOR_STEP_DELAY_US = 2000; // Delay between motor steps in microseconds
 
+    // TIMEOUT PARAMETERS (in milliseconds)
+    unsigned long int constexpr SERIAL_TIMEOUT_MS = 100;           // Timeout for serial parsing
+    unsigned long int constexpr STATE_ACTION_TIMEOUT_MS = 30000;   // Timeout for servo actions (30s)
+    unsigned long int constexpr STATE_MOVEMENT_TIMEOUT_MS = 60000; // Timeout for motor movements (60s)
+
     int constexpr I2C_ADD = 0x30; // I2C address for the robot
 
 } // namespace config

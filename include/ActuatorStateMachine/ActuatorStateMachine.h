@@ -6,6 +6,7 @@
 #include <Timer.h>
 #include <Motor.h>
 #include <Mission/Mission.h>
+#include <Logger.h>
 #include <vector>
 #include <optional>
 
@@ -122,6 +123,9 @@ protected:
         return m_missions.empty() ? std::nullopt : std::make_optional(m_missions.front());
     }
 
+    // Returns a pointer to the actual current mission (mutable access)
+    [[nodiscard]] Mission* currentMissionPtr() { return m_missions.empty() ? nullptr : &m_missions.front(); }
+
     [[nodiscard]] std::optional<Mission> nextMission() const
         { return m_missions.size() < 2 ? std::nullopt : std::make_optional(m_missions[1]); }
 
@@ -148,6 +152,7 @@ protected:
     bool m_isGateOpen = true;
     bool m_isKept = false;
     bool m_isLocked = false;
+    Logger m_logger{Logger::Level::INFO, "ActuatorStateMachine"};
 
     // Main state instances
     GoToIdleState m_gotoIdleState;

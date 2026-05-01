@@ -24,6 +24,7 @@ void GoToIdleState::_enter()
             machine->m_isGateOpen = false;
         }
         m_timer.start();
+        m_timeout = millis();
     }
 }
 
@@ -31,6 +32,14 @@ void GoToIdleState::_execute()
 {
     auto* machine = machineAs<ActuatorStateMachine>();
     if (machine) {
+        // Timeout protection
+        if ((millis() - m_timeout) > config::STATE_MOVEMENT_TIMEOUT_MS)
+        {
+            m_logger.error("GoToIdleState timeout! Forcing transition.");
+            m_stateMachine->setNextState(&machine->m_idleState);
+            return;
+        }
+
         if (!machine->m_motor_1.isAtObjective())
             machine->m_motor_1.run();
         if (!machine->m_motor_2.isAtObjective())
