@@ -34,6 +34,33 @@ void ActuatorStateMachine::serialParser() {
             addMission({id, missionType, shouldTurnBool, shouldKeepBool});
         }
     }
+    else if (input.length() > 0 && input[0] == 'T'){ // go to idle state top
+        if (!currentState)
+            return nullptr;
+        const String& name = currentState->name();
+        if (name == "IDLE" && !isItemKept())
+        {
+            m_stateMachine->setNextState(&m_gotoIdleStateTop);
+        }
+        else
+        {
+            Serial.println("ETF");
+        }
+    }
+    else if (input.length() > 0 && input[0] == 'B'){ // go to idle state bottom
+        if (!currentState)
+            return nullptr;
+        const String& name = currentState->name();
+        if (name == "IDLE_TOP")
+        {
+            m_stateMachine->setNextState(&m_gotoIdleState);
+        }
+        else
+        {
+            Serial.println("EBF");
+        }
+    }
+
 }
 
 State* ActuatorStateMachine::computeNextState(State* currentState)
@@ -47,6 +74,10 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
     if (name == "GT_IDLE")
     {
         return &m_idleState;
+    }
+    else if (name == "GT_IDLE_TOP")
+    {
+        return &m_idleStateTop;
     }
 
     auto mission = currentMission();

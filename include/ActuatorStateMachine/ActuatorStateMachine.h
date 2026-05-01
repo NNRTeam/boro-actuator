@@ -47,7 +47,9 @@ public:
         ,
         // Main states
         m_gotoIdleState(this)
-        , m_idleState(this)
+        , m_idleState(this, "IDLE")
+        , m_gotoIdleStateTop(this)
+        , m_idleStateTop(this, "IDLE_TOP")
         ,
         // TAKE section states
         m_gotoBot_T0(this, "GT_BOT_T0")
@@ -147,7 +149,9 @@ protected:
 
     // Main state instances
     GoToIdleState m_gotoIdleState;
+    GoToIdleStateTop m_gotoIdleStateTop;
     IdleState m_idleState;
+    IdleState m_idleStateTop;
 
     // TAKE section state instances
     GoToBottom m_gotoBot_T0;

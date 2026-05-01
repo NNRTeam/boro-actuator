@@ -6,8 +6,8 @@
 class IdleState : public State
 {
 public:
-    IdleState(StateMachine* stateMachine)
-        : State(stateMachine, "IDLE")
+    IdleState(StateMachine* stateMachine, const String& name = "IDLE")
+        : State(stateMachine, name)
     {
     }
 
