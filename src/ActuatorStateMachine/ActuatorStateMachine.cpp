@@ -135,6 +135,10 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
 
     if (name == "IDLE")
     {
+        if (mission->type == Mission::Type::IDLE_TOP && !isItemKept())
+        {
+            return &m_gotoIdleStateTop;
+        }
         if (mission->type == Mission::Type::PUT_IN_STOCK && !isItemKept())
         {
             return &m_gotoBot_T0;
@@ -155,6 +159,10 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
     }
     else if (name == "IDLE_TOP")
     {
+        if (mission->type == Mission::Type::IDLE && !isItemKept())
+        {
+            return &m_gotoIdleState;
+        }
         if (mission->type == Mission::Type::PUT_IN_STOCK && !isItemKept())
         {
             if (isStockLocked())

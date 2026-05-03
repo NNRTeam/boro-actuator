@@ -20,6 +20,8 @@ public:
     {
         PUT_IN_STOCK,
         DROP,
+        IDLE,
+        IDLE_TOP
     };
 
     int id;

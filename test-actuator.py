@@ -11,6 +11,8 @@ class ActuatorTester:
     # Mission types
     TAKE = 0  # PUT_IN_STOCK
     DROP = 1
+    IDLE = 2
+    IDLE_TOP = 3
     
     # Mission status (from responses)
     STATUS_NAMES = {
@@ -85,20 +87,12 @@ class ActuatorTester:
     def send_idle_top(self):
         """Aller à IDLE_TOP."""
         print("\n↑ Commande: Aller à IDLE_TOP")
-        command = "TF"
-        print(f"→ Envoi: {command}")
-        response = self._send_command(command)
-        if response:
-            print(f"← Réponse: {response}")
+        self.send_mission(self.IDLE_TOP, False, False)
     
     def send_idle(self):
         """Aller à IDLE."""
         print("\n↓ Commande: Aller à IDLE")
-        command = "BF"
-        print(f"→ Envoi: {command}")
-        response = self._send_command(command)
-        if response:
-            print(f"← Réponse: {response}")
+        self.send_mission(self.IDLE, False, False)
     
     def _parse_response(self, response: str):
         """Parser une réponse de mission."""
