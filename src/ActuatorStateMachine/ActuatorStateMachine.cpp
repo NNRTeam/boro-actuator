@@ -115,11 +115,11 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
     const String& name = currentState->name();
 
     // ===== MAIN STATES TRANSITIONS =====
-    if (name == "GT_IDLE")
+    if (name == "GoToIdle")
     {
         return &m_idleState;
     }
-    else if (name == "GT_IDLE_TOP")
+    else if (name == "GoToIdleTop")
     {
         return &m_idleStateTop;
     }
@@ -153,6 +153,28 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
             return &m_gotoTop_D7;
         }
     }
+    else if (name == "IDLE_TOP")
+    {
+        if (mission->type == Mission::Type::PUT_IN_STOCK && !isItemKept())
+        {
+            if (isStockLocked())
+                return &m_gotoTop_T11;
+            return &m_gotoBot_T0;
+        }
+        else if (mission->type == Mission::Type::PUT_IN_STOCK && isItemKept())
+        {
+            // Item already kept in gripper, go directly to stock it
+            return &m_gotoTop_T2;
+        }
+        else if (mission->type == Mission::Type::DROP && isItemKept())
+        {
+            return &m_gotoBot_D0;
+        }
+        else if (mission->type == Mission::Type::DROP && !isItemKept())
+        {
+            return &m_gotoTop_D7;
+        }
+    }
     // ===== TAKE SECTION TRANSITIONS =====
     else if (name == "GT_BOT_T0")
     {
@@ -164,18 +186,17 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
     }
     else if (name == "PICK_T1")
     {
+        addItemToStock();
         if (shouldTurn)
         {
             return &m_gotoTurn_T5;
         }
         else if (shouldKeep)
         {
-            addItemToStock();
             return &m_gotoIdleState;
         }
         else
         {
-            addItemToStock();
             return &m_gotoTop_T2;
         }
     }

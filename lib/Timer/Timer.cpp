@@ -32,11 +32,6 @@ unsigned long Timer::elapsedMicros() const
     {
         return currentMicros - m_startMicros;
     }
-    else
-    {
-        // Overflow occurred
-        return (ULONG_MAX - m_startMicros) + currentMicros + 1;
-    }
 }
 
 bool Timer::isExpired() const

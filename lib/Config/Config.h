@@ -25,13 +25,13 @@ namespace config {
     float constexpr MOTOR_MICROSTEPPING = 1.0; // Microstepping setting for the stepper drivers
 
     int constexpr MOTOR1_HOME_POSITION = 490; // Home position for motor 1
-    int constexpr MOTOR2_HOME_POSITION = 470; // Home position for motor 2
+    int constexpr MOTOR2_HOME_POSITION = 480; // Home position for motor 2
 
     int constexpr MOTOR1_BASE_POSITION = 0; // Base position for motor 1
     int constexpr MOTOR2_BASE_POSITION = 0; // Base position for motor 2
 
-    int constexpr MOTOR1_TURN_POSITION = 85; // Turn position for motor 1
-    int constexpr MOTOR2_TURN_POSITION = 85; // Turn position_ç for motor 2
+    int constexpr MOTOR1_TURN_POSITION = 120; // Turn position for motor 1
+    int constexpr MOTOR2_TURN_POSITION = 120; // Turn position_ç for motor 2
 
     int constexpr MOTOR1_GATE_OPEN_POSITION = 0; // Gate open position for motor 1
     int constexpr MOTOR2_GATE_OPEN_POSITION = 0; // Gate open position for motor 2
