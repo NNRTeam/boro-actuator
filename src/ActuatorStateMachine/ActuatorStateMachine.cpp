@@ -218,7 +218,7 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
     }
     else if (name == "UNPICK_T4")
     {
-        return &m_gotoIdleState;
+        return &m_gotoIdleStateTop;
     }
     else if (name == "GT_TURN_T5")
     {
@@ -282,7 +282,7 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
         removeItemFromStock();
         if (isStockEmpty())
         {
-            return &m_gotoIdleState;
+            return &m_gotoIdleStateTop;
         }
         else
         {
@@ -307,7 +307,7 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
     }
     else if (name == "UNPICK_D6")
     {
-        return &m_gotoIdleState;
+        return &m_gotoIdleStateTop;
     }
     else if (name == "GT_TOP_D7")
     {

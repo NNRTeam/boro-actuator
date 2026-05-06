@@ -35,7 +35,7 @@ public:
                          ColorSensor colorSensor,
                          Motor motor_1,
                          Motor motor_2)
-        : StateMachine(&m_gotoIdleState)
+        : StateMachine(&m_gotoIdleStateTop)
         , m_srv_top_1(srv_top_1)
         , m_srv_top_2(srv_top_2)
         , m_srv_bottom_1(srv_bottom_1)
