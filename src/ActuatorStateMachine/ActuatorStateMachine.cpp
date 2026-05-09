@@ -156,6 +156,19 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
         {
             return &m_gotoTop_D7;
         }
+
+        if (mission->type == Mission::Type::BANNER_LEFT)
+        {
+            return &m_bannerLeft;
+        }
+        else if (mission->type == Mission::Type::BANNER_RIGHT)
+        {
+            return &m_bannerRight;
+        }
+        else if (mission->type == Mission::Type::HOME_BANNER)
+        {
+            return &m_homeBanner;
+        }
     }
     else if (name == "IDLE_TOP")
     {
@@ -181,6 +194,10 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
         else if (mission->type == Mission::Type::DROP && !isItemKept())
         {
             return &m_gotoTop_D7;
+        }
+        if (mission->type == Mission::Type::HOME_BANNER)
+        {
+            return &m_homeBanner;
         }
     }
     // ===== TAKE SECTION TRANSITIONS =====

@@ -15,8 +15,8 @@ namespace config {
 
     int constexpr SERVO_TOP_1_PIN = 3;
     int constexpr SERVO_TOP_2_PIN = 5;
-    int constexpr SERVO_BOTTOM_1_PIN = 6;
-    int constexpr SERVO_BOTTOM_2_PIN = 9;
+    int constexpr SERVO_BANER_LEFT_PIN = 6;
+    int constexpr SERVO_BANER_RIGHT_PIN = 9;
     int constexpr SERVO_GRIPPER_1_PIN = 10;
     int constexpr SERVO_GRIPPER_2_PIN = 11;
 
@@ -47,18 +47,16 @@ namespace config {
 
     int constexpr SERVO_TOP_1_HOME_ANGLE = 85; // Home angle for top servo 1
     int constexpr SERVO_TOP_2_HOME_ANGLE = 85; // Home angle for top servo 2
-    int constexpr SERVO_BOTTOM_1_HOME_ANGLE = 0; // Home angle for bottom servo 1
-    int constexpr SERVO_BOTTOM_2_HOME_ANGLE = 180; // Home angle for bottom servo 2
+    int constexpr SERVO_BANER_LEFT_HOME_ANGLE = 0; // Home angle for bottom servo 1
+    int constexpr SERVO_BANER_RIGHT_HOME_ANGLE = 180; // Home angle for bottom servo 2
     int constexpr SERVO_GRIPPER_1_HOME_ANGLE = 0; // Home angle for gripper servo 1
     int constexpr SERVO_GRIPPER_2_HOME_ANGLE = 180; // Home angle for gripper servo 2
 
     int constexpr SERVO_TOP_1_OPEN_ANGLE = 110; // Open angle for top servo 1
     int constexpr SERVO_TOP_2_OPEN_ANGLE =  55; // Open angle for top servo 2
 
-    int constexpr SERVO_BOTTOM_1_COLOR_MEASURE_ANGLE = 90; // Angle for bottom servo 1 to measure color
-    int constexpr SERVO_BOTTOM_2_COLOR_MEASURE_ANGLE = 90; // Angle for bottom servo 2 to measure color
-    int constexpr SERVO_BOTTOM_1_REVERT_ANGLE = 180; // revert angle for bottom servo 1
-    int constexpr SERVO_BOTTOM_2_REVERT_ANGLE = 0; // revert angle for bottom servo 2
+    int constexpr SERVO_BANER_LEFT_ACTIVATED_ANGLE = 90;
+    int constexpr SERVO_BANER_RIGHT_ACTIVATED_ANGLE = 90; 
 
     int constexpr SERVO_GRIPPER_1_OPEN_ANGLE = 95; // Open angle for gripper servo 1
     int constexpr SERVO_GRIPPER_2_OPEN_ANGLE = 85; // Open angle for gripper servo 2

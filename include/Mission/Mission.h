@@ -21,7 +21,10 @@ public:
         PUT_IN_STOCK,
         DROP,
         IDLE,
-        IDLE_TOP
+        IDLE_TOP,
+        BANNER_LEFT,
+        BANNER_RIGHT,
+        HOME_BANNER
     };
 
     int id;

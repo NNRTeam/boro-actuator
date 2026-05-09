@@ -11,8 +11,8 @@ public:
                 const String& name,
                 int srv1Pos,
                 int srv2Pos,
-                Servo& srv1,
-                Servo& srv2,
+                Servo* srv1,
+                Servo* srv2,
                 Timer timer,
                 u_int64_t id)
         : State(stateMachine, name)
@@ -34,8 +34,8 @@ protected:
 private:
     int m_srv1Pos;
     int m_srv2Pos;
-    Servo& m_srv1;
-    Servo& m_srv2;
+    Servo* m_srv1;
+    Servo* m_srv2;
     Timer m_timer;
     u_int64_t m_id;
     unsigned long m_startTime;

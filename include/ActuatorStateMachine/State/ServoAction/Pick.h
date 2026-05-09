@@ -6,7 +6,7 @@
 class Pick : public ServoAction
 {
 public:
-    Pick(StateMachine* stateMachine, const String& name, Servo& srv1, Servo& srv2)
+    Pick(StateMachine* stateMachine, const String& name, Servo* srv1, Servo* srv2)
         : ServoAction(stateMachine,
                       name,
                       config::SERVO_TOP_1_HOME_ANGLE,

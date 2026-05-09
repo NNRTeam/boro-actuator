@@ -3,20 +3,18 @@
 #include <ActuatorStateMachine/State/ServoAction/ServoAction.h>
 #include <Config.h>
 
-class Turn : public ServoAction
+class BannerLeft : public ServoAction
 {
 public:
-    Turn(StateMachine* stateMachine, const String& name, Servo* srv1, Servo* srv2)
+    BannerLeft(StateMachine* stateMachine, const String& name, Servo* srv1)
         : ServoAction(stateMachine,
                       name,
                       config::SERVO_BANER_LEFT_ACTIVATED_ANGLE,
-                      config::SERVO_BANER_RIGHT_ACTIVATED_ANGLE,
+                      -1,
                       srv1,
-                      srv2,
+                      nullptr,
                       Timer(1000000),
                       3)
     {}
 
-protected:
-    void _exit() override;
 };

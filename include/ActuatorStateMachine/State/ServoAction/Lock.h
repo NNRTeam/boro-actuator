@@ -6,7 +6,7 @@
 class Lock : public ServoAction
 {
 public:
-    Lock(StateMachine* stateMachine, const String& name, Servo& srv1, Servo& srv2)
+    Lock(StateMachine* stateMachine, const String& name, Servo* srv1, Servo* srv2)
         : ServoAction(stateMachine,
                       name,
                       config::SERVO_GRIPPER_1_OPEN_ANGLE,

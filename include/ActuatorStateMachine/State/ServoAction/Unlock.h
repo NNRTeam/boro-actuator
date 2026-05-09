@@ -6,7 +6,7 @@
 class Unlock : public ServoAction
 {
 public:
-    Unlock(StateMachine* stateMachine, const String& name, Servo& srv1, Servo& srv2)
+    Unlock(StateMachine* stateMachine, const String& name, Servo* srv1, Servo* srv2)
         : ServoAction(stateMachine,
                       name,
                       config::SERVO_GRIPPER_1_HOME_ANGLE,

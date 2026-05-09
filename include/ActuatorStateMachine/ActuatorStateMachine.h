@@ -22,6 +22,9 @@
 #include <ActuatorStateMachine/State/ServoAction/Lock.h>
 #include <ActuatorStateMachine/State/ServoAction/Unlock.h>
 #include <ActuatorStateMachine/State/ServoAction/Turn.h>
+#include <ActuatorStateMachine/State/ServoAction/BannerLeft.h>
+#include <ActuatorStateMachine/State/ServoAction/BannerRight.h>
+#include <ActuatorStateMachine/State/ServoAction/HomeBanner.h>
 
 class ActuatorStateMachine : public StateMachine
 {
@@ -54,33 +57,38 @@ public:
         ,
         // TAKE section states
         m_gotoBot_T0(this, "GT_BOT_T0")
-        , m_pick_T1(this, "PICK_T1", m_srv_top_1, m_srv_top_2)
+        , m_pick_T1(this, "PICK_T1", &m_srv_top_1, &m_srv_top_2)
         , m_gotoTop_T2(this, "GT_TOP_T2")
-        , m_lock_T3(this, "LOCK_T3", m_srv_gripper_1, m_srv_gripper_2)
-        , m_unpick_T4(this, "UNPICK_T4", m_srv_top_1, m_srv_top_2)
+        , m_lock_T3(this, "LOCK_T3", &m_srv_gripper_1, &m_srv_gripper_2)
+        , m_unpick_T4(this, "UNPICK_T4", &m_srv_top_1, &m_srv_top_2)
         , m_gotoTurn_T5(this, "GT_TURN_T5")
-        , m_turn_T6(this, "TURN_T6", m_srv_bottom_1, m_srv_bottom_2)
+        , m_turn_T6(this, "TURN_T6", &m_srv_bottom_1, &m_srv_bottom_2)
         , m_gotoBot_T7(this, "GT_BOT_T7")
         , m_gotoBot_T8(this, "GT_BOT_T8")
         , m_gotoBot_T9(this, "GT_BOT_T9")
-        , m_unpick_T10(this, "UNPICK_T10", m_srv_top_1, m_srv_top_2)
+        , m_unpick_T10(this, "UNPICK_T10", &m_srv_top_1, &m_srv_top_2)
         , m_gotoTop_T11(this, "GT_TOP_T11")
-        , m_pick_T12(this, "PICK_T12", m_srv_top_1, m_srv_top_2)
-        , m_unlock_T13(this, "UNLOCK_T13", m_srv_gripper_1, m_srv_gripper_2)
+        , m_pick_T12(this, "PICK_T12", &m_srv_top_1, &m_srv_top_2)
+        , m_unlock_T13(this, "UNLOCK_T13", &m_srv_gripper_1, &m_srv_gripper_2)
         , m_gotoOver_T14(this, "GT_OVER_T14")
-        , m_unpick_T15(this, "UNPICK_T15", m_srv_top_1, m_srv_top_2)
+        , m_unpick_T15(this, "UNPICK_T15", &m_srv_top_1, &m_srv_top_2)
         ,
         // DROP section states
         m_gotoBot_D0(this, "GT_BOT_D0")
-        , m_unpick_D1(this, "UNPICK_D1", m_srv_top_1, m_srv_top_2)
+        , m_unpick_D1(this, "UNPICK_D1", &m_srv_top_1, &m_srv_top_2)
         , m_gotoOver_D2(this, "GT_OVER_D2")
-        , m_pick_D3(this, "PICK_D3", m_srv_top_1, m_srv_top_2)
+        , m_pick_D3(this, "PICK_D3", &m_srv_top_1, &m_srv_top_2)
         , m_gotoTop_D4(this, "GT_TOP_D4")
-        , m_lock_D5(this, "LOCK_D5", m_srv_gripper_1, m_srv_gripper_2)
-        , m_unpick_D6(this, "UNPICK_D6", m_srv_top_1, m_srv_top_2)
+        , m_lock_D5(this, "LOCK_D5", &m_srv_gripper_1, &m_srv_gripper_2)
+        , m_unpick_D6(this, "UNPICK_D6", &m_srv_top_1, &m_srv_top_2)
         , m_gotoTop_D7(this, "GT_TOP_D7")
-        , m_pick_D8(this, "PICK_D8", m_srv_top_1, m_srv_top_2)
-        , m_unlock_D9(this, "UNLOCK_D9", m_srv_gripper_1, m_srv_gripper_2){};
+        , m_pick_D8(this, "PICK_D8", &m_srv_top_1, &m_srv_top_2)
+        , m_unlock_D9(this, "UNLOCK_D9", &m_srv_gripper_1, &m_srv_gripper_2)
+        ,
+        // BANNER section states
+        m_bannerLeft(this, "BANNER_LEFT", &m_srv_bottom_1)
+        , m_bannerRight(this, "BANNER_RIGHT", &m_srv_bottom_2)
+        , m_homeBanner(this, "HOME_BANNER", &m_srv_bottom_1, &m_srv_bottom_2){}
 
     void run() override;
     void serialParser();
@@ -102,6 +110,9 @@ public:
     friend class Lock;
     friend class Unlock;
     friend class Turn;
+    friend class BannerLeft;
+    friend class BannerRight;
+    friend class HomeBanner;
 
 
 protected:
@@ -184,4 +195,9 @@ protected:
     GoToTop m_gotoTop_D7;
     Pick m_pick_D8;
     Unlock m_unlock_D9;
+
+    // BANNER section state instances
+    BannerLeft m_bannerLeft;
+    BannerRight m_bannerRight;
+    HomeBanner m_homeBanner;
 };

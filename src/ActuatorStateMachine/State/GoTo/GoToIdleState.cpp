@@ -9,8 +9,8 @@ void GoToIdleState::_enter()
         machine->m_motor_1.setObjective(config::MOTOR1_BASE_POSITION);
         machine->m_motor_2.setObjective(config::MOTOR2_BASE_POSITION);
         if (!machine->isItemKept()) {
-            machine->m_srv_bottom_1.write(config::SERVO_BOTTOM_1_HOME_ANGLE);
-            machine->m_srv_bottom_2.write(config::SERVO_BOTTOM_2_HOME_ANGLE);
+            machine->m_srv_bottom_1.write(config::SERVO_BANER_LEFT_HOME_ANGLE);
+            machine->m_srv_bottom_2.write(config::SERVO_BANER_RIGHT_HOME_ANGLE);
             machine->m_srv_top_1.write(config::SERVO_TOP_1_OPEN_ANGLE);
             machine->m_srv_top_2.write(config::SERVO_TOP_2_OPEN_ANGLE);
         }

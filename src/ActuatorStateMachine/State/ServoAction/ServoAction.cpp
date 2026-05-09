@@ -4,8 +4,9 @@
 
 void ServoAction::_enter()
 {
-    m_srv1.write(m_srv1Pos);
-    m_srv2.write(m_srv2Pos);
+    m_srv1->write(m_srv1Pos);
+    if (m_srv2 != nullptr)
+        m_srv2->write(m_srv2Pos);
     m_timer.start();
     m_startTime = millis();
 }

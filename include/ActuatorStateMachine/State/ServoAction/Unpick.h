@@ -6,7 +6,7 @@
 class Unpick : public ServoAction
 {
 public:
-    Unpick(StateMachine* stateMachine, const String& name, Servo& srv1, Servo& srv2)
+    Unpick(StateMachine* stateMachine, const String& name, Servo* srv1, Servo* srv2)
         : ServoAction(stateMachine,
                       name,
                       config::SERVO_TOP_1_OPEN_ANGLE,
