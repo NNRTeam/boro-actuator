@@ -13,6 +13,10 @@ class ActuatorTester:
     DROP = 1
     IDLE = 2
     IDLE_TOP = 3
+    BANNER_LEFT = 4
+    BANNER_RIGHT = 5
+    HOME_BANNER = 6
+    
     
     # Mission status (from responses)
     STATUS_NAMES = {
@@ -93,6 +97,21 @@ class ActuatorTester:
         """Aller à IDLE."""
         print("\n↓ Commande: Aller à IDLE")
         self.send_mission(self.IDLE, False, False)
+
+    def send_banner_left(self):
+        """Actionner BANNER_LEFT."""
+        print("\n← Commande: BANNER_LEFT")
+        self.send_mission(self.BANNER_LEFT, False, False)
+
+    def send_banner_right(self):
+        """Actionner BANNER_RIGHT."""
+        print("\n→ Commande: BANNER_RIGHT")
+        self.send_mission(self.BANNER_RIGHT, False, False)
+
+    def send_home_banner(self):
+        """Actionner HOME_BANNER."""
+        print("\n⌂ Commande: HOME_BANNER")
+        self.send_mission(self.HOME_BANNER, False, False)
     
     def _parse_response(self, response: str):
         """Parser une réponse de mission."""
@@ -125,6 +144,9 @@ class ActuatorTester:
             print("  8 - DROP + TURN + KEEP")
             print("  9 - Aller à IDLE_TOP")
             print("  10 - Aller à IDLE")
+            print("  11 - BANNER_LEFT")
+            print("  12 - BANNER_RIGHT")
+            print("  13 - HOME_BANNER")
             print("  0 - Quitter")
             print("-"*50)
             
@@ -153,6 +175,12 @@ class ActuatorTester:
                     self.send_idle_top()
                 elif choice == "10":
                     self.send_idle()
+                elif choice == "11":
+                    self.send_banner_left()
+                elif choice == "12":
+                    self.send_banner_right()
+                elif choice == "13":
+                    self.send_home_banner()
                 else:
                     print("✗ Choix invalide", file=sys.stderr)
             

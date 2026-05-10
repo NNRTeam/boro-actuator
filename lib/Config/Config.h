@@ -15,8 +15,8 @@ namespace config {
 
     int constexpr SERVO_TOP_1_PIN = 3;
     int constexpr SERVO_TOP_2_PIN = 5;
-    int constexpr SERVO_BANER_LEFT_PIN = 6;
-    int constexpr SERVO_BANER_RIGHT_PIN = 9;
+    int constexpr SERVO_BANER_LEFT_PIN = 9;
+    int constexpr SERVO_BANER_RIGHT_PIN = 6;
     int constexpr SERVO_GRIPPER_1_PIN = 10;
     int constexpr SERVO_GRIPPER_2_PIN = 11;
 
@@ -36,8 +36,8 @@ namespace config {
     int constexpr MOTOR1_GATE_OPEN_POSITION = 0; // Gate open position for motor 1
     int constexpr MOTOR2_GATE_OPEN_POSITION = 0; // Gate open position for motor 2
 
-    int constexpr MOTOR1_GATE_TOP_OPEN_POSITION = 150; // Gate top open position for motor 1
-    int constexpr MOTOR2_GATE_TOP_OPEN_POSITION = 150; // Gate top open position for motor 2
+    int constexpr MOTOR1_GATE_TOP_OPEN_POSITION = 200; // Gate top open position for motor 1
+    int constexpr MOTOR2_GATE_TOP_OPEN_POSITION = 200; // Gate top open position for motor 2
 
     int constexpr MOTOR1_GATE_CLOSE_POSITION = 460; // Gate close position for motor 1
     int constexpr MOTOR2_GATE_CLOSE_POSITION = 460; // Gate close position for motor 2
@@ -47,16 +47,16 @@ namespace config {
 
     int constexpr SERVO_TOP_1_HOME_ANGLE = 85; // Home angle for top servo 1
     int constexpr SERVO_TOP_2_HOME_ANGLE = 85; // Home angle for top servo 2
-    int constexpr SERVO_BANER_LEFT_HOME_ANGLE = 0; // Home angle for bottom servo 1
-    int constexpr SERVO_BANER_RIGHT_HOME_ANGLE = 180; // Home angle for bottom servo 2
+    int constexpr SERVO_BANER_LEFT_HOME_ANGLE = 180; // Home angle for bottom servo 1
+    int constexpr SERVO_BANER_RIGHT_HOME_ANGLE = 0; // Home angle for bottom servo 2
     int constexpr SERVO_GRIPPER_1_HOME_ANGLE = 0; // Home angle for gripper servo 1
     int constexpr SERVO_GRIPPER_2_HOME_ANGLE = 180; // Home angle for gripper servo 2
 
-    int constexpr SERVO_TOP_1_OPEN_ANGLE = 110; // Open angle for top servo 1
-    int constexpr SERVO_TOP_2_OPEN_ANGLE =  55; // Open angle for top servo 2
+    int constexpr SERVO_TOP_1_OPEN_ANGLE = 120; // Open angle for top servo 1
+    int constexpr SERVO_TOP_2_OPEN_ANGLE =  45; // Open angle for top servo 2
 
-    int constexpr SERVO_BANER_LEFT_ACTIVATED_ANGLE = 90;
-    int constexpr SERVO_BANER_RIGHT_ACTIVATED_ANGLE = 90; 
+    int constexpr SERVO_BANER_LEFT_ACTIVATED_ANGLE = 75;
+    int constexpr SERVO_BANER_RIGHT_ACTIVATED_ANGLE = 105; 
 
     int constexpr SERVO_GRIPPER_1_OPEN_ANGLE = 95; // Open angle for gripper servo 1
     int constexpr SERVO_GRIPPER_2_OPEN_ANGLE = 85; // Open angle for gripper servo 2

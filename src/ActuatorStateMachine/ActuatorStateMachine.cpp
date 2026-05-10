@@ -187,15 +187,24 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
             // Item already kept in gripper, go directly to stock it
             return &m_gotoTop_T2;
         }
-        else if (mission->type == Mission::Type::DROP && isItemKept())
+        else if (mission->type == Mission::Type::DROP)
         {
-            return &m_gotoBot_D0;
-        }
-        else if (mission->type == Mission::Type::DROP && !isItemKept())
-        {
-            return &m_gotoTop_D7;
+            m_currentStock = 0; // Clear stock to prevent issues with remaining items
+            return &m_unlock_D9;
         }
         if (mission->type == Mission::Type::HOME_BANNER)
+        {
+            return &m_homeBanner;
+        }
+                if (mission->type == Mission::Type::BANNER_LEFT)
+        {
+            return &m_bannerLeft;
+        }
+        else if (mission->type == Mission::Type::BANNER_RIGHT)
+        {
+            return &m_bannerRight;
+        }
+        else if (mission->type == Mission::Type::HOME_BANNER)
         {
             return &m_homeBanner;
         }
@@ -324,7 +333,7 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
     }
     else if (name == "UNPICK_D6")
     {
-        return &m_gotoIdleStateTop;
+        return &m_gotoIdleState;
     }
     else if (name == "GT_TOP_D7")
     {
@@ -336,7 +345,19 @@ State* ActuatorStateMachine::computeNextState(State* currentState)
     }
     else if (name == "UNLOCK_D9")
     {
-        return &m_gotoBot_D0;
+        return &m_gotoIdleStateTop;
+    }
+    else if(name == "BANNER_LEFT")
+    {
+        return &m_gotoIdleState;
+    }
+    else if(name == "BANNER_RIGHT")
+    {
+        return &m_gotoIdleState;
+    }
+    else if(name == "HOME_BANNER")
+    {
+        return &m_gotoIdleStateTop;
     }
 
     m_logger.error("computeNextState: Unknown state " + name);
